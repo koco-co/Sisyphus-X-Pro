@@ -146,7 +146,7 @@
             "验证显示计划总数卡片",
             "验证数字准确对应数据库"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -162,7 +162,7 @@
             "验证图表显示最近30天数据",
             "验证图表可以交互 (hover显示详情)"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -177,7 +177,7 @@
             "验证显示未测试项目数",
             "验证显示百分比"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         }
       ]
@@ -837,8 +837,8 @@
   },
   "metadata": {
     "total_features": 54,
-    "completed_features": 16,
-    "completion_rate": 29.6,
+    "completed_features": 27,
+    "completion_rate": 50.0,
     "notes": "基于 FR-001 到 FR-010 需求文档的功能清单"
   }
 }

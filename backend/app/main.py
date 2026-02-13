@@ -9,8 +9,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.database import Base, engine
 from app.init_builtin import init_builtin_keywords
-from app.services.global_param_service import GlobalParamService
-from app.services.report_scheduler import init_report_scheduler, shutdown_report_scheduler
 from app.routers import (
     auth,
     dashboard,
@@ -25,6 +23,8 @@ from app.routers import (
     test_plans,
     upload,
 )
+from app.services.global_param_service import GlobalParamService
+from app.services.report_scheduler import init_report_scheduler, shutdown_report_scheduler
 
 
 @asynccontextmanager

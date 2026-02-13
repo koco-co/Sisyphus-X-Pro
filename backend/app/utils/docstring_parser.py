@@ -1,7 +1,6 @@
 """Parse Python function docstrings to extract parameter information."""
 
 import ast
-import inspect
 import re
 from typing import Any
 
@@ -97,6 +96,13 @@ def _parse_docstring_params(docstring: str) -> dict[str, str]:
 
     if google_match:
         args_block = google_match.group(1)
+        # Stop at other sections like Returns:, Raises:, etc.
+        for section_name in ["Returns:", "Raises:", "Note:", "Example:"]:
+            section_match = re.search(rf"\n\s*{section_name}", args_block)
+            if section_match:
+                args_block = args_block[: section_match.start()]
+                break
+
         # Match each parameter line (excluding **kwargs)
         # Each param is on its own line: name: description
         lines = args_block.split("\n")
@@ -202,14 +208,14 @@ def _extract_signature_params(func_def: ast.FunctionDef) -> dict[str, dict[str, 
     return params
 
 
-def _unparse_type(node: ast.AST) -> str:
+def _unparse_type(node: ast.AST) -> str | None:
     """Convert AST type annotation to string.
 
     Args:
         node: AST node representing type
 
     Returns:
-        String representation of type
+        String representation of type, or None if parsing fails
     """
     try:
         # Python 3.9+ has ast.unparse

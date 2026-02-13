@@ -17,10 +17,9 @@ async def test_list_global_params(async_client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_get_global_params_grouped(async_client: AsyncClient, auth_token: str):
+async def test_get_global_params_grouped(async_client: AsyncClient):
     """Test getting global parameters grouped by class name."""
-    headers = {"Authorization": f"Bearer {auth_token}"}
-    response = await async_client.get("/api/v1/global-functions/grouped", headers=headers)
+    response = await async_client.get("/api/v1/global-functions/grouped")
 
     assert response.status_code == 200
     data = response.json()
@@ -33,9 +32,8 @@ async def test_get_global_params_grouped(async_client: AsyncClient, auth_token: 
 
 
 @pytest.mark.asyncio
-async def test_create_custom_function(async_client: AsyncClient, auth_token: str):
+async def test_create_custom_function(async_client: AsyncClient):
     """Test creating a custom global parameter function."""
-    headers = {"Authorization": f"Bearer {auth_token}"}
     function_data = {
         "class_name": "CustomUtils",
         "method_name": "test_add",
@@ -74,9 +72,8 @@ def test_add(a: int, b: int) -> int:
 
 
 @pytest.mark.asyncio
-async def test_parse_function_calls(async_client: AsyncClient, auth_token: str):
+async def test_parse_function_calls(async_client: AsyncClient):
     """Test parsing function calls in text."""
-    headers = {"Authorization": f"Bearer {auth_token}"}
 
     # Test simple function call
     parse_request = {
@@ -98,9 +95,8 @@ async def test_parse_function_calls(async_client: AsyncClient, auth_token: str):
 
 
 @pytest.mark.asyncio
-async def test_parse_nested_function_calls(async_client: AsyncClient, auth_token: str):
+async def test_parse_nested_function_calls(async_client: AsyncClient):
     """Test parsing nested function calls."""
-    headers = {"Authorization": f"Bearer {auth_token}"}
 
     # Test nested function call
     parse_request = {
@@ -124,9 +120,8 @@ async def test_parse_nested_function_calls(async_client: AsyncClient, auth_token
 
 
 @pytest.mark.asyncio
-async def test_parse_random_functions(async_client: AsyncClient, auth_token: str):
+async def test_parse_random_functions(async_client: AsyncClient):
     """Test parsing random utility functions."""
-    headers = {"Authorization": f"Bearer {auth_token}"}
 
     # Test random functions
     parse_request = {
@@ -151,9 +146,8 @@ async def test_parse_random_functions(async_client: AsyncClient, auth_token: str
 
 
 @pytest.mark.asyncio
-async def test_parse_string_functions(async_client: AsyncClient, auth_token: str):
+async def test_parse_string_functions(async_client: AsyncClient):
     """Test parsing string utility functions."""
-    headers = {"Authorization": f"Bearer {auth_token}"}
 
     # Test string functions
     parse_request = {
@@ -178,9 +172,8 @@ async def test_parse_string_functions(async_client: AsyncClient, auth_token: str
 
 
 @pytest.mark.asyncio
-async def test_update_custom_function(async_client: AsyncClient, auth_token: str):
+async def test_update_custom_function(async_client: AsyncClient):
     """Test updating a custom function."""
-    headers = {"Authorization": f"Bearer {auth_token}"}
 
     # First create a function
     function_data = {
@@ -219,9 +212,8 @@ async def test_update_custom_function(async_client: AsyncClient, auth_token: str
 
 
 @pytest.mark.asyncio
-async def test_delete_custom_function(async_client: AsyncClient, auth_token: str):
+async def test_delete_custom_function(async_client: AsyncClient):
     """Test deleting a custom function."""
-    headers = {"Authorization": f"Bearer {auth_token}"}
 
     # First create a function
     function_data = {
@@ -258,13 +250,12 @@ async def test_delete_custom_function(async_client: AsyncClient, auth_token: str
 
 
 @pytest.mark.asyncio
-async def test_cannot_modify_builtin_function(async_client: AsyncClient, auth_token: str):
+async def test_cannot_modify_builtin_function(async_client: AsyncClient):
     """Test that built-in functions cannot be modified."""
-    headers = {"Authorization": f"Bearer {auth_token}"}
 
     # Try to get a built-in function
     list_response = await async_client.get(
-        "/api/v1/global-functions?is_builtin=true", headers=headers
+        "/api/v1/global-functions?is_builtin=true"
     )
     assert list_response.status_code == 200
 
@@ -282,6 +273,6 @@ async def test_cannot_modify_builtin_function(async_client: AsyncClient, auth_to
 
         # Try to delete
         delete_response = await async_client.delete(
-            f"/api/v1/global-functions/{builtin_id}", headers=headers
+            f"/api/v1/global-functions/{builtin_id}"
         )
         assert delete_response.status_code == 403

@@ -11,13 +11,14 @@ import {
 import type { DragEndEvent } from '@dnd-kit/core'
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { Plus, Folder, File, ChevronRight, ChevronDown, Play, Trash2, Terminal } from 'lucide-react'
+import { Plus, Folder, File, ChevronRight, ChevronDown, Play, Trash2, Terminal, FilePlus } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/Dialog'
 import { CurlImportDialog } from '@/components/CurlImportDialog'
+import { InterfaceCreateDialog } from '@/components/InterfaceCreateDialog'
 import type { InterfaceFolder, InterfaceItem, TreeNode } from '@/types/interface'
 
 export function InterfacesPage() {
@@ -31,6 +32,7 @@ export function InterfacesPage() {
   const [newFolderDialogOpen, setNewFolderDialogOpen] = useState(false)
   const [newFolderName, setNewFolderName] = useState('')
   const [curlDialogOpen, setCurlDialogOpen] = useState(false)
+  const [createInterfaceDialogOpen, setCreateInterfaceDialogOpen] = useState(false)
 
   // 拖拽传感器
   const sensors = useSensors(
@@ -215,6 +217,10 @@ export function InterfacesPage() {
               <Terminal className="h-4 w-4 mr-1" />
               导入 cURL
             </Button>
+            <Button size="sm" variant="ghost" onClick={() => setCreateInterfaceDialogOpen(true)}>
+              <FilePlus className="h-4 w-4 mr-1" />
+              新建接口
+            </Button>
             <Button size="sm" variant="ghost" onClick={() => setNewFolderDialogOpen(true)}>
               <Folder className="h-4 w-4 mr-1" />
               新建目录
@@ -296,6 +302,19 @@ export function InterfacesPage() {
           projectId={projectId}
           folderId={selectedNode?.type === 'folder' ? selectedNode.id : null}
           onImportSuccess={() => {
+            fetchTreeData()
+          }}
+        />
+      )}
+
+      {/* 创建接口对话框 */}
+      {projectId && (
+        <InterfaceCreateDialog
+          open={createInterfaceDialogOpen}
+          onClose={() => setCreateInterfaceDialogOpen(false)}
+          projectId={projectId}
+          folderId={selectedNode?.type === 'folder' ? selectedNode.id : null}
+          onCreateSuccess={() => {
             fetchTreeData()
           }}
         />

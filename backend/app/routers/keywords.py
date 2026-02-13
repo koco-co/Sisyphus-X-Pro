@@ -1,6 +1,6 @@
 """Keyword router."""
 
-from typing import Annotated, Optional
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,8 +17,8 @@ from app.schemas.keyword import (
     KeywordResponse,
     KeywordUpdate,
 )
-from app.utils.docstring_parser import parse_docstring
 from app.services.keyword_service import KeywordService
+from app.utils.docstring_parser import parse_docstring
 
 router = APIRouter(prefix="/keywords", tags=["Keywords"])
 
@@ -41,9 +41,9 @@ async def get_keyword_service(
 async def list_keywords(
     page: Annotated[int, Query(ge=1, description="页码")] = 1,
     pageSize: Annotated[int, Query(ge=1, le=100, description="每页条数")] = 10,  # noqa: N803
-    type: Annotated[Optional[str], Query(description="关键字类型")] = None,
-    is_builtin: Annotated[Optional[bool], Query(description="是否内置")] = None,
-    is_enabled: Annotated[Optional[bool], Query(description="是否启用")] = None,
+    type: Annotated[str | None, Query(description="关键字类型")] = None,
+    is_builtin: Annotated[bool | None, Query(description="是否内置")] = None,
+    is_enabled: Annotated[bool | None, Query(description="是否启用")] = None,
     current_user: User = Depends(get_current_user),
     service: KeywordService = Depends(get_keyword_service),
 ):
@@ -78,7 +78,7 @@ async def list_keywords(
             name=k.name,
             method_name=k.method_name,
             code=k.code,
-            params=k.params or [],
+            params=(k.params if isinstance(k.params, list) else []),
             is_builtin=k.is_builtin,
             is_enabled=k.is_enabled,
             created_at=k.created_at,
@@ -115,7 +115,7 @@ async def get_enabled_keywords(
                 name=k.name,
                 method_name=k.method_name,
                 code=k.code,
-                params=k.params or [],
+                params=(k.params if isinstance(k.params, list) else []),
                 is_builtin=k.is_builtin,
                 is_enabled=k.is_enabled,
                 created_at=k.created_at,
@@ -198,7 +198,7 @@ async def create_keyword(
             name=keyword.name,
             method_name=keyword.method_name,
             code=keyword.code,
-            params=keyword.params or [],
+            params=(keyword.params if isinstance(keyword.params, list) else []),
             is_builtin=keyword.is_builtin,
             is_enabled=keyword.is_enabled,
             created_at=keyword.created_at,
@@ -242,7 +242,7 @@ async def get_keyword(
         name=keyword.name,
         method_name=keyword.method_name,
         code=keyword.code,
-        params=keyword.params or [],
+        params=(keyword.params if isinstance(keyword.params, list) else []),
         is_builtin=keyword.is_builtin,
         is_enabled=keyword.is_enabled,
         created_at=keyword.created_at,
@@ -284,7 +284,7 @@ async def update_keyword(
             name=keyword.name,
             method_name=keyword.method_name,
             code=keyword.code,
-            params=keyword.params or [],
+            params=(keyword.params if isinstance(keyword.params, list) else []),
             is_builtin=keyword.is_builtin,
             is_enabled=keyword.is_enabled,
             created_at=keyword.created_at,
@@ -370,7 +370,7 @@ async def toggle_keyword(
         name=keyword.name,
         method_name=keyword.method_name,
         code=keyword.code,
-        params=keyword.params or [],
+        params=(keyword.params if isinstance(keyword.params, list) else []),
         is_builtin=keyword.is_builtin,
         is_enabled=keyword.is_enabled,
         created_at=keyword.created_at,

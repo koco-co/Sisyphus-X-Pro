@@ -1,12 +1,12 @@
 """Safe function execution utility for global parameter functions."""
 
-import re
 import ast
-from typing import Any, Dict, List, Tuple
-from datetime import datetime
-import time
 import random
+import re
 import string
+import time
+from datetime import datetime
+from typing import Any
 
 
 class FunctionExecutor:
@@ -46,7 +46,7 @@ class FunctionExecutor:
         "string": string,
     }
 
-    def __init__(self, functions: Dict[str, Any]):
+    def __init__(self, functions: dict[str, Any]):
         """Initialize function executor.
 
         Args:
@@ -54,7 +54,7 @@ class FunctionExecutor:
         """
         self.functions = {**self.BUILTINS, **functions}
 
-    def extract_function_calls(self, text: str) -> List[str]:
+    def extract_function_calls(self, text: str) -> list[str]:
         """Extract all function calls from {{}} placeholders.
 
         Args:
@@ -88,7 +88,7 @@ class FunctionExecutor:
 
                 # Disallow attribute access on dangerous modules
                 if isinstance(node, ast.Attribute):
-                    if hasattr(node.value, "id"):
+                    if hasattr(node.value, "id") and isinstance(node.value, ast.Name):
                         module_name = node.value.id
                         if module_name in ["os", "sys", "subprocess", "eval", "exec", "open"]:
                             return False
@@ -146,7 +146,7 @@ class FunctionExecutor:
         except Exception as e:
             raise ValueError(f"Function execution failed: {call_expr}: {str(e)}") from e
 
-    def parse_text(self, text: str, context: Dict[str, Any]) -> Tuple[str, List[str], bool, str]:
+    def parse_text(self, text: str, context: dict[str, Any]) -> tuple[str, list[str], bool, str]:
         """Parse text and replace {{function()}} with actual values.
 
         Supports nested function calls like {{outer(inner())}}.
@@ -175,7 +175,7 @@ class FunctionExecutor:
                 # Execute function
                 result = self.execute_function(expr, context)
                 return str(result)
-            except Exception as e:
+            except Exception:
                 # On error, return original placeholder
                 return match.group(0)
 

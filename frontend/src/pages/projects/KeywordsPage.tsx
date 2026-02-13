@@ -152,9 +152,10 @@ export default function KeywordsPage() {
 
   const handleToggleEnabled = async (keyword: Keyword) => {
     try {
-      const response = await fetch('http://localhost:8000/api/v1/keywords/' + keyword.id + '/toggle', {
+      const newEnabled = !keyword.enabled
+      const response = await fetch(`http://localhost:8000/api/v1/keywords/${keyword.id}/toggle?is_enabled=${newEnabled}`, {
         method: 'PATCH',
-        headers: { Authorization: 'Bearer ' + token },
+        headers: { Authorization: `Bearer ${token}` },
       })
 
       if (!response.ok) throw new Error('切换状态失败')
