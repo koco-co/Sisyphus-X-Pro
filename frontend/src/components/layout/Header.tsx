@@ -1,4 +1,4 @@
-import { LogOut, User, List, Play } from 'lucide-react'
+import { LogOut, User, List, Play, Code } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
@@ -10,7 +10,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/DropdownMenu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Link } from 'react-router-dom'
 
 /**
  * 应用顶部导航栏
@@ -70,17 +69,38 @@ export default function Header() {
               </div>
             </div>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Link to="/scenarios" className="flex items-center">
-                <List className="mr-2 h-4 w-4" />
-                <span>场景编排</span>
-              </Link>
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                navigate('/scenarios')
+              }}
+              className="flex items-center cursor-pointer"
+            >
+              <List className="mr-2 h-4 w-4" />
+              <span>场景编排</span>
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Link to="/test-plans" className="flex items-center">
-                <Play className="mr-2 h-4 w-4" />
-                <span>测试计划</span>
-              </Link>
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                navigate('/test-plans')
+              }}
+              className="flex items-center cursor-pointer"
+            >
+              <Play className="mr-2 h-4 w-4" />
+              <span>测试计划</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                navigate('/global-functions')
+              }}
+              className="flex items-center cursor-pointer"
+            >
+              <Code className="mr-2 h-4 w-4" />
+              <span>全局函数</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => navigate('/settings')}>
