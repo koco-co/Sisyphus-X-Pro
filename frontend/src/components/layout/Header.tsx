@@ -102,6 +102,17 @@ export default function Header() {
               <Code className="mr-2 h-4 w-4" />
               <span>全局函数</span>
             </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                navigate('/reports')
+              }}
+              className="flex items-center cursor-pointer"
+            >
+              <List className="mr-2 h-4 w-4" />
+              <span>测试报告</span>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => navigate('/settings')}>
               <User className="mr-2 h-4 w-4" />
