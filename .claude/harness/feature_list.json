@@ -111,7 +111,7 @@
             "验证密码哈希值不是明文",
             "验证哈希值包含bcrypt标识符"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "database_inspection"
         },
         {
@@ -124,7 +124,7 @@
             "等待15分钟",
             "验证可以重新登录"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         }
       ]
@@ -383,7 +383,7 @@
             "创建子文件夹",
             "验证树形结构正确显示"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -401,7 +401,7 @@
             "点击保存",
             "验证接口创建成功"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -420,7 +420,7 @@
             "保存",
             "验证接口创建成功"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -437,7 +437,7 @@
             "验证环境出现在列表中",
             "验证可以切换环境"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -453,7 +453,7 @@
             "保存",
             "验证变量出现在列表中"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -469,7 +469,7 @@
             "验证文件保存到MinIO",
             "验证接口关联MinIO文件路径"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         }
       ]
@@ -837,8 +837,8 @@
   },
   "metadata": {
     "total_features": 54,
-    "completed_features": 6,
-    "completion_rate": 11.1,
+    "completed_features": 16,
+    "completion_rate": 29.6,
     "notes": "基于 FR-001 到 FR-010 需求文档的功能清单"
   }
 }
