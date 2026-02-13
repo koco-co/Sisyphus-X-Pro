@@ -4,10 +4,27 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.database import Base, engine
-from app.routers import auth, db_configs, environments, interfaces, keywords, projects
+from app.init_builtin import init_builtin_keywords
+from app.services.global_param_service import GlobalParamService
+from app.services.report_scheduler import init_report_scheduler, shutdown_report_scheduler
+from app.routers import (
+    auth,
+    dashboard,
+    db_configs,
+    environments,
+    global_params,
+    interfaces,
+    keywords,
+    projects,
+    reports,
+    scenarios,
+    test_plans,
+    upload,
+)
 
 
 @asynccontextmanager
@@ -20,8 +37,29 @@ async def lifespan(app: FastAPI):
     # Startup: Create database tables
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+    # Initialize built-in keywords
+    async with AsyncSession(engine) as db:
+        count = await init_builtin_keywords(db)
+        await db.commit()
+        print(f"✓ Initialized {count} built-in keywords")
+
+    # Initialize built-in global parameters
+    async with AsyncSession(engine) as db:
+        service = GlobalParamService(db)
+        param_count = await service.initialize_builtin_params()
+        await db.commit()
+        print(f"✓ Initialized {param_count} built-in global parameters")
+
+    # Initialize report scheduler
+    def async_session_maker():
+        return AsyncSession(engine)
+
+    init_report_scheduler(async_session_maker)
+
     yield
-    # Shutdown: Close database connections
+    # Shutdown: Close database connections and stop scheduler
+    shutdown_report_scheduler()
     await engine.dispose()
 
 
@@ -49,6 +87,12 @@ app.include_router(db_configs.router, prefix=settings.API_V1_STR)
 app.include_router(keywords.router, prefix=settings.API_V1_STR)
 app.include_router(environments.router, prefix=settings.API_V1_STR)
 app.include_router(interfaces.router, prefix=settings.API_V1_STR)
+app.include_router(scenarios.router, prefix=settings.API_V1_STR)
+app.include_router(test_plans.router, prefix=settings.API_V1_STR)
+app.include_router(global_params.router, prefix=settings.API_V1_STR)
+app.include_router(dashboard.router, prefix=settings.API_V1_STR)
+app.include_router(reports.router, prefix=settings.API_V1_STR)
+app.include_router(upload.router, prefix=settings.API_V1_STR)
 
 
 @app.get("/")

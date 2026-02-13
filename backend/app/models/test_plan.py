@@ -1,7 +1,7 @@
 """Test plan model."""
 
 from sqlalchemy import ForeignKey, Index, Integer, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Optional
 
 from app.database import Base
@@ -25,6 +25,10 @@ class TestPlan(Base, TimestampMixin):
     creator_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
+
+    # Relationships
+    project = relationship("Project", back_populates="test_plans")
+    creator = relationship("User", back_populates="test_plans")
 
     __table_args__ = ()
 

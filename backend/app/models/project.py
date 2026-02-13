@@ -22,6 +22,7 @@ class Project(Base, TimestampMixin):
 
     # Relationships
     creator = relationship("User", lazy="joined")
+    test_plans = relationship("TestPlan", back_populates="project")
 
     __table_args__ = ()
 
