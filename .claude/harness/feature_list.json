@@ -610,7 +610,7 @@
             "保存",
             "验证计划创建成功"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
