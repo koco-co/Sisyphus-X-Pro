@@ -47,14 +47,14 @@ export default function KeywordsPage() {
   const fetchKeywords = async () => {
     setLoading(true)
     try {
-      const response = await fetch('http://localhost:8000/api/v1/keywords?project_id=' + projectId + '&is_builtin=false', {
-        headers: { Authorization: 'Bearer ' + token },
+      const response = await fetch(`http://localhost:8000/api/v1/keywords?is_builtin=false`, {
+        headers: { Authorization: `Bearer ${token}` },
       })
 
       if (!response.ok) throw new Error('获取关键字列表失败')
 
       const data = await response.json()
-      setKeywords(data)
+      setKeywords(data.items || [])
     } catch (error) {
       toast('获取关键字列表失败', 'error')
     } finally {
@@ -152,7 +152,7 @@ export default function KeywordsPage() {
 
   const handleToggleEnabled = async (keyword: Keyword) => {
     try {
-      const newEnabled = !keyword.enabled
+      const newEnabled = !keyword.is_enabled
       const response = await fetch(`http://localhost:8000/api/v1/keywords/${keyword.id}/toggle?is_enabled=${newEnabled}`, {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },
@@ -266,7 +266,7 @@ export default function KeywordsPage() {
                       <TableCell className="text-muted-foreground">{keyword.method_name}</TableCell>
                       <TableCell>
                         <Switch
-                          checked={keyword.enabled}
+                          checked={keyword.is_enabled}
                           onClick={() => handleToggleEnabled(keyword)}
                         />
                       </TableCell>

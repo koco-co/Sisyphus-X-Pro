@@ -9,7 +9,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/DropdownMenu'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Link } from 'react-router-dom'
 
 /**
  * 应用顶部导航栏
@@ -68,6 +69,19 @@ export default function Header() {
                 )}
               </div>
             </div>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <Link to="/scenarios" className="flex items-center">
+                <List className="mr-2 h-4 w-4" />
+                <span>场景编排</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link to="/test-plans" className="flex items-center">
+                <Play className="mr-2 h-4 w-4" />
+                <span>测试计划</span>
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => navigate('/settings')}>
               <User className="mr-2 h-4 w-4" />

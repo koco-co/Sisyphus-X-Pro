@@ -8,6 +8,8 @@ import DatabaseConfigPage from '@/pages/projects/DatabaseConfigPage'
 import KeywordsPage from '@/pages/projects/KeywordsPage'
 import { InterfacesPage } from '@/pages/projects/InterfacesPage'
 import Header from '@/components/layout/Header'
+import ScenariosPage from '@/pages/scenarios/ScenariosPage'
+import TestPlansPage from '@/pages/test-plans/TestPlansPage'
 import { apiClient } from '@/lib/api'
 import { useEffect } from 'react'
 
@@ -99,6 +101,22 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <InterfacesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/scenarios"
+        element={
+          <ProtectedRoute>
+            <ScenariosPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/test-plans"
+        element={
+          <ProtectedRoute>
+            <TestPlansPage />
           </ProtectedRoute>
         }
       />
