@@ -1,6 +1,7 @@
 """Database connection status scheduler for automated health checks."""
 
 from datetime import datetime
+from typing import Literal
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
@@ -54,8 +55,10 @@ class DBConnectionScheduler:
 
             for config in configs:
                 if config.is_enabled:
+                    # Type assertion: db_type is guaranteed to be "mysql" or "postgresql"
+                    db_type: Literal["mysql", "postgresql"] = config.db_type  # type: ignore
                     success, message = await service.test_connection(
-                        db_type=config.db_type,
+                        db_type=db_type,
                         host=config.host,
                         port=config.port,
                         database=config.database,
@@ -110,8 +113,10 @@ class DBConnectionScheduler:
 
             for config in configs:
                 if config.is_enabled:
+                    # Type assertion: db_type is guaranteed to be "mysql" or "postgresql"
+                    db_type: Literal["mysql", "postgresql"] = config.db_type  # type: ignore
                     success, message = await service.test_connection(
-                        db_type=config.db_type,
+                        db_type=db_type,
                         host=config.host,
                         port=config.port,
                         database=config.database,

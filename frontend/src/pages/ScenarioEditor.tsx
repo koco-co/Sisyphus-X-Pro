@@ -28,7 +28,7 @@ export default function ScenarioEditor() {
   async function loadScenario() {
     try {
       setLoading(true);
-      const response = await api.get<Scenario>(\`/scenarios/\${scenarioId}\`);
+      const response = await api.get<Scenario>(`/scenarios/\${scenarioId}`);
       if (response.success && response.data) {
         setScenario(response.data);
         setSteps(response.data.steps || []);
@@ -53,7 +53,7 @@ export default function ScenarioEditor() {
         variables: scenario.variables,
         environment_id: scenario.environment_id,
       };
-      const response = await api.put(\`/scenarios/\${scenarioId}\`, updateData);
+      const response = await api.put(`/scenarios/\${scenarioId}`, updateData);
       if (response.success) {
         alert('保存成功');
         await loadScenario();
@@ -68,7 +68,7 @@ export default function ScenarioEditor() {
 
   async function handleDeleteStep(stepId: number) {
     try {
-      const response = await api.delete(\`/scenarios/\${scenarioId}/steps/\${stepId}\`);
+      const response = await api.delete(`/scenarios/\${scenarioId}/steps/\${stepId}`);
       if (response.success) {
         setSteps(steps.filter(s => s.id !== stepId));
       }
@@ -80,7 +80,7 @@ export default function ScenarioEditor() {
   async function handleDebug() {
     if (!scenario) return;
     try {
-      const response = await api.post(\`/scenarios/\${scenarioId}/debug\`, {});
+      const response = await api.post(`/scenarios/\${scenarioId}/debug`, {});
       if (response.success) {
         alert('调试已启动，请查看 Allure 报告');
       }
@@ -117,7 +117,7 @@ export default function ScenarioEditor() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate(\`/projects/\${projectId}/scenarios\`)}
+            onClick={() => navigate(`/projects/\${projectId}/scenarios`)}
             className="flex items-center gap-2"
           >
             <ArrowLeft size={20} />
@@ -162,7 +162,7 @@ export default function ScenarioEditor() {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key as any)}
-                className={\`\${activeTab === tab.key ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} group inline-flex items-center gap-2 border-b-2 py-4 px-1 text-sm font-medium\`}
+                className={`\${activeTab === tab.key ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} group inline-flex items-center gap-2 border-b-2 py-4 px-1 text-sm font-medium`}
               >
                 <tab.icon size={18} />
                 {tab.label}

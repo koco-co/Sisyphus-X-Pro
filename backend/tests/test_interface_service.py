@@ -9,6 +9,7 @@ from app.schemas.interface import (
     CurlImportRequest,
     InterfaceCreate,
     InterfaceFolderCreate,
+    InterfaceUpdate,
 )
 from app.services.interface_service import InterfaceService
 
@@ -20,8 +21,11 @@ async def test_get_interface_tree(db_session: AsyncSession, test_project):
 
     # Create folders
     folder1 = InterfaceFolder(project_id=test_project.id, name="API")
+    db_session.add(folder1)
+    await db_session.flush()  # Flush to get folder1.id
+
     folder2 = InterfaceFolder(project_id=test_project.id, name="Auth", parent_id=folder1.id)
-    db_session.add_all([folder1, folder2])
+    db_session.add(folder2)
     await db_session.flush()
 
     # Create interfaces

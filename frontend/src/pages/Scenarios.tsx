@@ -33,7 +33,7 @@ export default function Scenarios() {
   async function loadScenarios() {
     try {
       setLoading(true);
-      const response = await api.get<Scenario[]>(\`/scenarios?project_id=\${projectId}\`);
+      const response = await api.get<Scenario[]>(`/scenarios?project_id=\${projectId}`);
       if (response.success && response.data) {
         setScenarios(response.data);
       }
@@ -67,7 +67,7 @@ export default function Scenarios() {
     if (!scenarioToDelete) return;
 
     try {
-      const response = await api.delete(\`/scenarios/\${scenarioToDelete.id}\`);
+      const response = await api.delete(`/scenarios/\${scenarioToDelete.id}`);
       if (response.success) {
         setIsDeleteDialogOpen(false);
         setScenarioToDelete(null);
@@ -200,7 +200,7 @@ export default function Scenarios() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => navigate(\`/projects/\${projectId}/scenarios/\${scenario.id}\`)}
+                  onClick={() => navigate(`/projects/\${projectId}/scenarios/\${scenario.id}`)}
                   className="flex items-center gap-2"
                 >
                   <Pencil size={16} />
@@ -209,7 +209,7 @@ export default function Scenarios() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => navigate(\`/projects/\${projectId}/scenarios/\${scenario.id}/debug\`)}
+                  onClick={() => navigate(`/projects/\${projectId}/scenarios/\${scenario.id}/debug`)}
                   className="flex items-center gap-2"
                 >
                   <Play size={16} />

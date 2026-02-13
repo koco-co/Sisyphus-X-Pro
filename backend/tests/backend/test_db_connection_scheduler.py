@@ -4,9 +4,24 @@ from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.database_config import DatabaseConfig
 from app.services.db_connection_scheduler import DBConnectionScheduler
+
+
+@pytest.fixture
+def mock_session():
+    """Create a mock database session."""
+    return MagicMock(spec=AsyncSession)
+
+
+@pytest.fixture
+def mock_session_factory(mock_session):
+    """Create a mock session factory."""
+    def _factory():
+        return mock_session
+    return _factory
 
 
 @pytest.fixture
@@ -57,13 +72,15 @@ def mock_configs():
     return configs
 
 
-def test_init_scheduler(db_connection_scheduler):
+@pytest.mark.asyncio
+async def test_init_scheduler(db_connection_scheduler):
     """Test scheduler initialization."""
     assert db_connection_scheduler.check_interval_minutes == 10
     assert db_connection_scheduler.scheduler is not None
 
 
-def test_start_scheduler(db_connection_scheduler):
+@pytest.mark.asyncio
+async def test_start_scheduler(db_connection_scheduler):
     """Test starting the scheduler."""
     db_connection_scheduler.start()
 
@@ -74,8 +91,12 @@ def test_start_scheduler(db_connection_scheduler):
     assert len(jobs) == 1
     assert jobs[0].id == "check_db_connections"
 
+    # Cleanup
+    db_connection_scheduler.shutdown()
 
-def test_shutdown_scheduler(db_connection_scheduler):
+
+@pytest.mark.asyncio
+async def test_shutdown_scheduler(db_connection_scheduler):
     """Test shutting down the scheduler."""
     db_connection_scheduler.start()
     db_connection_scheduler.shutdown()
@@ -162,7 +183,8 @@ async def test_check_now(db_connection_scheduler, mock_configs, mock_session_fac
         assert result["failure_count"] == 0
 
 
-def test_set_check_interval(db_connection_scheduler):
+@pytest.mark.asyncio
+async def test_set_check_interval(db_connection_scheduler):
     """Test setting check interval."""
     db_connection_scheduler.set_check_interval(5)
 
@@ -175,7 +197,8 @@ def test_set_check_interval_invalid(db_connection_scheduler):
         db_connection_scheduler.set_check_interval(0)
 
 
-def test_set_check_interval_reschedules_job(db_connection_scheduler):
+@pytest.mark.asyncio
+async def test_set_check_interval_reschedules_job(db_connection_scheduler):
     """Test that setting interval reschedules the job."""
     db_connection_scheduler.start()
 
@@ -186,6 +209,9 @@ def test_set_check_interval_reschedules_job(db_connection_scheduler):
     jobs = db_connection_scheduler.scheduler.get_jobs()
     assert len(jobs) == 1
     assert jobs[0].trigger.interval.total_seconds() == 15 * 60
+
+    # Cleanup
+    db_connection_scheduler.shutdown()
 
 
 @pytest.mark.asyncio
@@ -216,10 +242,14 @@ async def test_check_now_with_mixed_results(
         assert result["failure_count"] == 1
 
 
-def test_scheduler_multiple_starts(db_connection_scheduler):
+@pytest.mark.asyncio
+async def test_scheduler_multiple_starts(db_connection_scheduler):
     """Test starting scheduler multiple times doesn't create duplicate jobs."""
     db_connection_scheduler.start()
     db_connection_scheduler.start()  # Should not create duplicate jobs
 
     jobs = db_connection_scheduler.scheduler.get_jobs()
     assert len(jobs) == 1
+
+    # Cleanup
+    db_connection_scheduler.shutdown()

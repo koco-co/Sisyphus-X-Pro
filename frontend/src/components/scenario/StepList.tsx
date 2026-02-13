@@ -1,7 +1,19 @@
 import { useState } from 'react';
-import { DndContext, PointerSensorContext, useDraggable, useDroppable, useSensor, useSensors } from '@dnd-kit/core';
-import { SortableContext, SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { SortableContext as SortableContextType, SortableContext } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import {
+  DndContext,
+  PointerSensor,
+  useDraggable,
+  useDroppable,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  arrayMove,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { GripVertical, Trash2, Edit2 } from 'lucide-react';
 import type { ScenarioStep } from '@/types/scenario';
 
@@ -31,31 +43,45 @@ export default function StepList({ steps, onReorder, onDelete, onEdit }: StepLis
   });
 
   return (
-    <DndContext sensors={sensors}>
-      <SortableContext items={steps.map(s => s.id)}>
-        <SortableContextType>
-          <div
-            {...listenAttributes}
-            ref={setDroppableNodeRef}
-            className="space-y-3"
-          >
-            {steps.map((step, index) => (
-              <SortableStep
-                key={step.id}
-                step={step}
-                index={index}
-                activeId={activeId}
-                setActiveId={setActiveId}
-                onReorder={onReorder}
-                onDelete={onDelete}
-                onEdit={onEdit}
-              />
-            ))}
-          </div>
-        </SortableContextType>
-      </DndContext>
-    </div>
+    <DndContext
+      sensors={sensors}
+      onDragEnd={handleDragEnd}
+    >
+      <SortableContext
+        items={steps.map(s => s.id)}
+        strategy={verticalListSortingStrategy}
+      >
+        <div
+          {...listenAttributes}
+          ref={setDroppableNodeRef}
+          className="space-y-3"
+        >
+          {steps.map((step, index) => (
+            <SortableStep
+              key={step.id}
+              step={step}
+              index={index}
+              activeId={activeId}
+              setActiveId={setActiveId}
+              onReorder={onReorder}
+              onDelete={onDelete}
+              onEdit={onEdit}
+            />
+          ))}
+        </div>
+      </SortableContext>
+    </DndContext>
   );
+
+  function handleDragEnd(event: { active: { id: number }; over: { id: number } | null }) {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = steps.findIndex(s => s.id === active.id);
+      const newIndex = steps.findIndex(s => s.id === over.id);
+      onReorder(oldIndex, newIndex);
+    }
+    setActiveId(null);
+  }
 }
 
 interface SortableStepProps {
@@ -86,7 +112,6 @@ function SortableStep({
     transition,
   } = useSortable({
     id: step.id,
-    index,
   });
 
   const style = {
@@ -105,7 +130,7 @@ function SortableStep({
     <div
       ref={setNodeRef}
       style={style}
-      className={\`group relative bg-white rounded-lg border \${isDragging ? 'border-blue-500 shadow-lg' : 'border-gray-200 hover:border-gray-300'} p-4 transition-all\`}
+      className={`group relative bg-white rounded-lg border ${isDragging ? 'border-blue-500 shadow-lg' : 'border-gray-200 hover:border-gray-300'} p-4 transition-all`}
     >
       {/* 拖拽手柄 */}
       <button
@@ -123,7 +148,7 @@ function SortableStep({
         <div className="flex items-start justify-between mb-2">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <span className={\`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold \${activeId === step.id ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}\`}>
+              <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold ${activeId === step.id ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}>
                 {index + 1}
               </span>
               <h3 className="text-lg font-semibold text-gray-900">{step.description}</h3>

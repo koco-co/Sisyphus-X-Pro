@@ -82,7 +82,7 @@ export default function StepEditor({ keywordId, params, onChange }: StepEditorPr
 
   async function loadKeywords(type: KeywordType) {
     try {
-      const response = await api.get<Keyword[]>(\`/keywords?type=\${type}\`);
+      const response = await api.get<Keyword[]>(`/keywords?type=\${type}`);
       if (response.success && response.data) {
         setKeywords(response.data);
       }
@@ -124,7 +124,7 @@ export default function StepEditor({ keywordId, params, onChange }: StepEditorPr
   function renderParamInput(param: { name: string; description?: string; type?: string; required?: boolean; default?: any }) {
     const value = editedParams[param.name] !== undefined ? editedParams[param.name] : param.default;
     
-    const inputId = \`param-\${param.name}\`;
+    const inputId = `param-\${param.name}`;
 
     switch (param.type) {
       case 'boolean':
@@ -156,7 +156,7 @@ export default function StepEditor({ keywordId, params, onChange }: StepEditorPr
               type="number"
               value={value?.toString() || ''}
               onChange={(e) => handleParamChange(param.name, e.target.value ? parseFloat(e.target.value) : null)}
-              placeholder={\`请输入 \${param.description || param.name}\`}
+              placeholder={`请输入 \${param.description || param.name}`}
               className="w-full"
             />
           </div>
@@ -180,7 +180,7 @@ export default function StepEditor({ keywordId, params, onChange }: StepEditorPr
                   // 忽略 JSON 解析错误
                 }
               }}
-              placeholder={\`请输入 JSON 格式的 \${param.description || param.name}\`}
+              placeholder={`请输入 JSON 格式的 \${param.description || param.name}`}
               rows={4}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-mono"
             />
@@ -205,7 +205,7 @@ export default function StepEditor({ keywordId, params, onChange }: StepEditorPr
                   // 忽略 JSON 解析错误
                 }
               }}
-              placeholder={\`请输入 JSON 数组格式的 \${param.description || param.name}\`}
+              placeholder={`请输入 JSON 数组格式的 \${param.description || param.name}`}
               rows={4}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-mono"
             />
@@ -225,7 +225,7 @@ export default function StepEditor({ keywordId, params, onChange }: StepEditorPr
               type="text"
               value={value?.toString() || ''}
               onChange={(e) => handleParamChange(param.name, e.target.value)}
-              placeholder={\`请输入 \${param.description || param.name}\`}
+              placeholder={`请输入 \${param.description || param.name}`}
               className="w-full"
             />
           </div>
@@ -248,9 +248,9 @@ export default function StepEditor({ keywordId, params, onChange }: StepEditorPr
               key={option.value}
               type="button"
               onClick={() => handleTypeChange(option.value)}
-              className={\`p-3 border rounded-lg text-left transition-colors \${keywordType === option.value
+              className={`p-3 border rounded-lg text-left transition-colors \${keywordType === option.value
                 ? 'border-blue-500 bg-blue-50 text-blue-700'
-                : 'border-gray-300 hover:border-gray-400 text-gray-700'}\`}
+                : 'border-gray-300 hover:border-gray-400 text-gray-700'}`}
             >
               <div className="flex items-center justify-between">
                 <span className="font-medium">{option.label}</span>
@@ -276,9 +276,9 @@ export default function StepEditor({ keywordId, params, onChange }: StepEditorPr
                   key={keyword.id}
                   type="button"
                   onClick={() => handleKeywordChange(keyword.id.toString())}
-                  className={\`p-3 border rounded-lg text-left transition-colors \${selectedKeywordId === keyword.id
+                  className={`p-3 border rounded-lg text-left transition-colors \${selectedKeywordId === keyword.id
                     ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'border-gray-300 hover:border-gray-400 text-gray-700'}\`}
+                    : 'border-gray-300 hover:border-gray-400 text-gray-700'}`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
