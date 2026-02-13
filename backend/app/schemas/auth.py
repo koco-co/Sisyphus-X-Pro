@@ -16,7 +16,7 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     """User registration schema."""
 
-    password: str = Field(..., min_length=8, max_length=100)
+    password: str = Field(..., min_length=8, max_length=72)  # bcrypt 限制最大72字节
 
 
 class UserLogin(BaseModel):

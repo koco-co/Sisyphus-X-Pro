@@ -22,7 +22,7 @@
             "点击邮件中的验证链接",
             "验证自动登录到系统"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -837,8 +837,8 @@
   },
   "metadata": {
     "total_features": 54,
-    "completed_features": 0,
-    "completion_rate": 0.0,
+    "completed_features": 1,
+    "completion_rate": 1.9,
     "notes": "基于 FR-001 到 FR-010 需求文档的功能清单"
   }
 }

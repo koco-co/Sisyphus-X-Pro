@@ -23,24 +23,26 @@ from app.utils.password import hash_password
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=Token, status_code=status.HTTP_201_CREATED)
 async def register(
     user_in: UserCreate,
     db: AsyncSession = Depends(get_db),
 ):
     """Register a new user with email and password.
 
+    自动登录并返回 JWT token。
+
     Args:
         user_in: User registration data
         db: Database session
 
     Returns:
-        Created user object
+        JWT access token and user information
 
     Raises:
         HTTPException: If email already registered
     """
-    # Check if user already exists
+    # 检查邮箱是否已注册
     result = await db.execute(select(User).where(User.email == user_in.email))
     existing_user = result.scalar_one_or_none()
     if existing_user:
@@ -48,7 +50,7 @@ async def register(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered"
         )
 
-    # Create new user
+    # 创建新用户
     user = User(
         email=user_in.email,
         password_hash=hash_password(user_in.password),
@@ -59,7 +61,14 @@ async def register(
     await db.commit()
     await db.refresh(user)
 
-    return user
+    # 自动登录并生成 JWT token
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": str(user.id), "email": user.email},
+        expires_delta=access_token_expires,
+    )
+
+    return Token(access_token=access_token, user=UserResponse.model_validate(user))
 
 
 @router.post("/login", response_model=Token)
