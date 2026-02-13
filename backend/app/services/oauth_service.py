@@ -2,7 +2,7 @@
 
 import secrets
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Any
 from urllib.parse import urlencode
 
 import httpx
@@ -28,7 +28,7 @@ class OAuthService:
         self.client_id = client_id
         self.client_secret = client_secret
 
-    def get_authorization_url(self, redirect_uri: str, scope: Optional[str] = None) -> tuple[str, str]:
+    def get_authorization_url(self, redirect_uri: str, scope: str | None = None) -> tuple[str, str]:
         """Generate OAuth authorization URL with state parameter.
 
         Args:
@@ -109,7 +109,7 @@ class OAuthService:
         else:  # google
             return token_data["access_token"]
 
-    async def get_user_info(self, access_token: str) -> Dict[str, Any]:
+    async def get_user_info(self, access_token: str) -> dict[str, Any]:
         """Fetch user information using access token.
 
         Args:
@@ -136,7 +136,7 @@ class OAuthService:
             return response.json()
 
     async def get_or_create_user(
-        self, user_info: Dict[str, Any], db: AsyncSession
+        self, user_info: dict[str, Any], db: AsyncSession
     ) -> User:
         """Get existing user or create new one from OAuth info.
 

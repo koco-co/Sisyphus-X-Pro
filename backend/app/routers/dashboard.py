@@ -1,6 +1,7 @@
 """Dashboard router."""
 
 from fastapi import APIRouter, Depends, Query
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.schemas.dashboard import (
@@ -9,7 +10,6 @@ from app.schemas.dashboard import (
     TrendResponse,
 )
 from app.services.dashboard_service import DashboardService
-from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 dashboard_service = DashboardService()

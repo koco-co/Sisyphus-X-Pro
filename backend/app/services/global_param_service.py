@@ -1,16 +1,14 @@
 """Global parameter service for business logic."""
 
-import re
-from typing import Dict, List, Optional
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.global_param import GlobalParam
 from app.schemas.global_param import GlobalParamCreate, GlobalParamUpdate
 from app.utils.function_executor import (
-    FunctionExecutor,
     BUILTIN_FUNCTIONS,
     BUILTIN_PARAMS_DATA,
+    FunctionExecutor,
 )
 
 
@@ -29,9 +27,9 @@ class GlobalParamService:
         self,
         skip: int = 0,
         limit: int = 100,
-        class_name: Optional[str] = None,
-        is_builtin: Optional[bool] = None,
-    ) -> tuple[List[GlobalParam], int]:
+        class_name: str | None = None,
+        is_builtin: bool | None = None,
+    ) -> tuple[list[GlobalParam], int]:
         """List global parameters with pagination and filtering.
 
         Args:
@@ -66,7 +64,7 @@ class GlobalParamService:
 
         return list(params), total
 
-    async def get_global_param_by_id(self, param_id: int) -> Optional[GlobalParam]:
+    async def get_global_param_by_id(self, param_id: int) -> GlobalParam | None:
         """Get global parameter by ID.
 
         Args:
@@ -123,7 +121,7 @@ class GlobalParamService:
 
     async def update_global_param(
         self, param_id: int, param_in: GlobalParamUpdate
-    ) -> Optional[GlobalParam]:
+    ) -> GlobalParam | None:
         """Update global parameter.
 
         Args:
@@ -198,7 +196,7 @@ class GlobalParamService:
         await self.db.flush()
         return True
 
-    async def get_global_params_grouped(self) -> Dict[str, List[GlobalParam]]:
+    async def get_global_params_grouped(self) -> dict[str, list[GlobalParam]]:
         """Get all global parameters grouped by class name.
 
         Returns:
@@ -210,7 +208,7 @@ class GlobalParamService:
         params = result.scalars().all()
 
         # Group by class_name
-        grouped: Dict[str, List[GlobalParam]] = {}
+        grouped: dict[str, list[GlobalParam]] = {}
         for param in params:
             if param.class_name not in grouped:
                 grouped[param.class_name] = []
@@ -247,8 +245,8 @@ class GlobalParamService:
         return FunctionExecutor(functions)
 
     async def parse_function_calls(
-        self, text: str, context: Dict[str, str]
-    ) -> tuple[str, List[str], bool, Optional[str]]:
+        self, text: str, context: dict[str, str]
+    ) -> tuple[str, list[str], bool, str | None]:
         """Parse {{function()}} calls in text and replace with actual values.
 
         Args:

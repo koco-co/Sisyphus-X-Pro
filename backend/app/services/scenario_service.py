@@ -2,7 +2,6 @@
 
 import csv
 from io import StringIO
-from typing import Optional
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,14 +27,14 @@ class ScenarioService:
         name: str,
         project_id: int,
         creator_id: int,
-        description: Optional[str] = None,
+        description: str | None = None,
         priority: str = "P2",
-        tags: Optional[dict] = None,
-        pre_sql: Optional[str] = None,
-        post_sql: Optional[str] = None,
-        variables: Optional[dict] = None,
-        environment_id: Optional[int] = None,
-        steps_data: Optional[list[dict]] = None,
+        tags: dict | None = None,
+        pre_sql: str | None = None,
+        post_sql: str | None = None,
+        variables: dict | None = None,
+        environment_id: int | None = None,
+        steps_data: list[dict] | None = None,
     ) -> Scenario:
         """Create a new scenario with optional steps.
 
@@ -88,7 +87,7 @@ class ScenarioService:
 
         return scenario
 
-    async def get_scenario_by_id(self, scenario_id: int) -> Optional[Scenario]:
+    async def get_scenario_by_id(self, scenario_id: int) -> Scenario | None:
         """Get scenario by ID with steps.
 
         Args:
@@ -108,7 +107,7 @@ class ScenarioService:
 
     async def list_scenarios(
         self,
-        project_id: Optional[int] = None,
+        project_id: int | None = None,
         limit: int = 100,
         offset: int = 0,
     ) -> tuple[list[dict], int]:
@@ -169,15 +168,15 @@ class ScenarioService:
     async def update_scenario(
         self,
         scenario_id: int,
-        name: Optional[str] = None,
-        description: Optional[str] = None,
-        priority: Optional[str] = None,
-        tags: Optional[dict] = None,
-        pre_sql: Optional[str] = None,
-        post_sql: Optional[str] = None,
-        variables: Optional[dict] = None,
-        environment_id: Optional[int] = None,
-    ) -> Optional[Scenario]:
+        name: str | None = None,
+        description: str | None = None,
+        priority: str | None = None,
+        tags: dict | None = None,
+        pre_sql: str | None = None,
+        post_sql: str | None = None,
+        variables: dict | None = None,
+        environment_id: int | None = None,
+    ) -> Scenario | None:
         """Update scenario.
 
         Args:
@@ -245,7 +244,7 @@ class ScenarioService:
         keyword_id: int,
         params: dict,
         sort_order: int = 0,
-    ) -> Optional[ScenarioStep]:
+    ) -> ScenarioStep | None:
         """Add a step to scenario.
 
         Args:
@@ -302,11 +301,11 @@ class ScenarioService:
     async def update_step(
         self,
         step_id: int,
-        description: Optional[str] = None,
-        keyword_id: Optional[int] = None,
-        params: Optional[dict] = None,
-        sort_order: Optional[int] = None,
-    ) -> Optional[ScenarioStep]:
+        description: str | None = None,
+        keyword_id: int | None = None,
+        params: dict | None = None,
+        sort_order: int | None = None,
+    ) -> ScenarioStep | None:
         """Update a scenario step.
 
         Args:
@@ -360,7 +359,7 @@ class ScenarioService:
         scenario_id: int,
         filename: str,
         csv_content: str,
-    ) -> Optional[Dataset]:
+    ) -> Dataset | None:
         """Create dataset from CSV content.
 
         Args:
@@ -398,7 +397,7 @@ class ScenarioService:
 
         return dataset
 
-    async def get_dataset_by_scenario(self, scenario_id: int) -> Optional[Dataset]:
+    async def get_dataset_by_scenario(self, scenario_id: int) -> Dataset | None:
         """Get dataset for scenario.
 
         Args:

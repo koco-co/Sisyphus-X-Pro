@@ -1,8 +1,8 @@
 """Environment variable model."""
 
+
 from sqlalchemy import ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
-from typing import Optional
 
 from app.database import Base
 from app.models.base import TimestampMixin
@@ -22,7 +22,7 @@ class EnvVariable(Base, TimestampMixin):
     )
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     value: Mapped[str] = mapped_column(nullable=False)
-    description: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    description: Mapped[str | None] = mapped_column(String(500), nullable=True)
     source: Mapped[str] = mapped_column(
         String(20), nullable=False, default="manual"
     )  # manual / extracted

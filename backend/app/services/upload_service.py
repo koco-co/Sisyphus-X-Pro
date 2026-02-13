@@ -2,7 +2,6 @@
 
 import uuid
 from io import BytesIO
-from typing import Optional
 
 from minio import Minio
 from minio.error import S3Error
@@ -96,7 +95,7 @@ class UploadService:
             print(f"Delete failed: {e}")
             return False
 
-    def get_file_url(self, object_name: str, expires: int = 3600) -> Optional[str]:
+    def get_file_url(self, object_name: str, expires: int = 3600) -> str | None:
         """Get presigned URL for file.
 
         Args:

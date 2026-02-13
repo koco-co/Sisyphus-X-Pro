@@ -1,7 +1,7 @@
 """JWT authentication middleware and utilities."""
 
 from datetime import datetime, timedelta, timezone
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -26,7 +26,7 @@ oauth2_scheme_refresh = OAuth2PasswordBearer(
 )
 
 
-def create_access_token(data: dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = None) -> str:
     """Create a JWT access token.
 
     Args:
@@ -64,7 +64,7 @@ def create_refresh_token(data: dict[str, Any]) -> str:
     return encoded_jwt
 
 
-def decode_token(token: str) -> Optional[dict[str, Any]]:
+def decode_token(token: str) -> dict[str, Any] | None:
     """Decode and verify a JWT token.
 
     Args:
@@ -81,7 +81,7 @@ def decode_token(token: str) -> Optional[dict[str, Any]]:
 
 
 async def get_current_user(
-    token: Optional[str] = Depends(oauth2_scheme),
+    token: str | None = Depends(oauth2_scheme),
     db: AsyncSession = Depends(get_db),
 ) -> User:
     """Get the current authenticated user from JWT token.
@@ -132,7 +132,7 @@ async def get_current_user(
         raise credentials_exception
 
     # Extract user ID
-    user_id: Optional[str] = payload.get("sub")
+    user_id: str | None = payload.get("sub")
     if user_id is None:
         raise credentials_exception
 
@@ -152,9 +152,9 @@ async def get_current_user(
 
 
 async def get_current_user_optional(
-    token: Optional[str] = Depends(oauth2_scheme),
+    token: str | None = Depends(oauth2_scheme),
     db: AsyncSession = Depends(get_db),
-) -> Optional[User]:
+) -> User | None:
     """Get the current user if authenticated, otherwise return None.
 
     This is useful for endpoints that work both with and without authentication.
@@ -187,7 +187,7 @@ async def get_current_user_optional(
         if payload is None:
             return None
 
-        user_id: Optional[str] = payload.get("sub")
+        user_id: str | None = payload.get("sub")
         if user_id is None:
             return None
 
@@ -198,7 +198,7 @@ async def get_current_user_optional(
         return None
 
 
-async def authenticate_user(email: str, password: str, db: AsyncSession) -> Optional[User]:
+async def authenticate_user(email: str, password: str, db: AsyncSession) -> User | None:
     """Authenticate a user by email and password.
 
     Args:

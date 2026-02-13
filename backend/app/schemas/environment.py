@@ -1,6 +1,6 @@
 """Environment schemas for request/response validation."""
 
-from typing import Optional
+
 from pydantic import BaseModel, ConfigDict, Field
 
 # ============== Environment Schemas ==============
@@ -21,8 +21,8 @@ class EnvironmentCreate(EnvironmentBase):
 class EnvironmentUpdate(BaseModel):
     """Schema for updating an environment."""
 
-    name: Optional[str] = Field(None, min_length=1, max_length=100)
-    base_url: Optional[str] = Field(None, max_length=500)
+    name: str | None = Field(None, min_length=1, max_length=100)
+    base_url: str | None = Field(None, max_length=500)
 
 
 class EnvironmentResponse(EnvironmentBase):
@@ -41,7 +41,7 @@ class EnvVariableBase(BaseModel):
 
     name: str = Field(..., min_length=1, max_length=200, description="Variable name")
     value: str = Field(..., description="Variable value")
-    description: Optional[str] = Field(None, max_length=500, description="Variable description")
+    description: str | None = Field(None, max_length=500, description="Variable description")
 
 
 class EnvVariableCreate(EnvVariableBase):
@@ -67,7 +67,7 @@ class GlobalVariableBase(BaseModel):
 
     name: str = Field(..., min_length=1, max_length=200, description="Variable name")
     value: str = Field(..., description="Variable value")
-    description: Optional[str] = Field(None, max_length=500, description="Variable description")
+    description: str | None = Field(None, max_length=500, description="Variable description")
 
 
 class GlobalVariableCreate(GlobalVariableBase):
@@ -79,9 +79,9 @@ class GlobalVariableCreate(GlobalVariableBase):
 class GlobalVariableUpdate(BaseModel):
     """Schema for updating a global variable."""
 
-    name: Optional[str] = Field(None, min_length=1, max_length=200)
-    value: Optional[str] = None
-    description: Optional[str] = Field(None, max_length=500)
+    name: str | None = Field(None, min_length=1, max_length=200)
+    value: str | None = None
+    description: str | None = Field(None, max_length=500)
 
 
 class GlobalVariableResponse(GlobalVariableBase):

@@ -1,6 +1,6 @@
 """Project service for business logic."""
 
-from typing import List, Optional
+
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -25,9 +25,9 @@ class ProjectService:
         self,
         skip: int = 0,
         limit: int = 100,
-        name: Optional[str] = None,
-        creator_id: Optional[int] = None,
-    ) -> tuple[List[Project], int]:
+        name: str | None = None,
+        creator_id: int | None = None,
+    ) -> tuple[list[Project], int]:
         """List projects with pagination and filtering.
 
         Args:
@@ -62,7 +62,7 @@ class ProjectService:
 
         return list(projects), total
 
-    async def get_project_by_id(self, project_id: int) -> Optional[Project]:
+    async def get_project_by_id(self, project_id: int) -> Project | None:
         """Get project by ID.
 
         Args:
@@ -118,7 +118,7 @@ class ProjectService:
 
     async def update_project(
         self, project_id: int, project_in: ProjectUpdate
-    ) -> Optional[Project]:
+    ) -> Project | None:
         """Update project.
 
         Args:

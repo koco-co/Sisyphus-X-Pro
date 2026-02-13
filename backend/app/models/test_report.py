@@ -1,9 +1,8 @@
 """Test report model."""
 
 from datetime import datetime
-from typing import Optional
 
-from sqlalchemy import DateTime, Float, ForeignKey, Index, Integer, String
+from sqlalchemy import DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
@@ -35,9 +34,9 @@ class TestReport(Base):
     passed: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     failed: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     skipped: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    duration_seconds: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    allure_path: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
-    allure_expires_at: Mapped[Optional[datetime]] = mapped_column(
+    duration_seconds: Mapped[float | None] = mapped_column(Float, nullable=True)
+    allure_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    allure_expires_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True, index=True
     )
     executor_id: Mapped[int] = mapped_column(
@@ -45,7 +44,7 @@ class TestReport(Base):
     )
     environment_name: Mapped[str] = mapped_column(String(100), nullable=False)  # 快照: 运行环境名称
     started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
-    finished_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, default=datetime.now
     )

@@ -1,7 +1,6 @@
 """Test plan-related schemas."""
 
 from datetime import datetime
-from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -10,7 +9,7 @@ class TestPlanBase(BaseModel):
     """Base test plan schema."""
 
     name: str = Field(..., min_length=1, max_length=200, description="计划名称")
-    description: Optional[str] = Field(None, max_length=1000, description="计划描述")
+    description: str | None = Field(None, max_length=1000, description="计划描述")
 
 
 class TestPlanCreate(TestPlanBase):
@@ -22,8 +21,8 @@ class TestPlanCreate(TestPlanBase):
 class TestPlanUpdate(BaseModel):
     """Test plan update schema."""
 
-    name: Optional[str] = Field(None, min_length=1, max_length=200)
-    description: Optional[str] = Field(None, max_length=1000)
+    name: str | None = Field(None, min_length=1, max_length=200)
+    description: str | None = Field(None, max_length=1000)
 
 
 class TestPlanResponse(TestPlanBase):
@@ -42,7 +41,7 @@ class TestPlanResponse(TestPlanBase):
 class TestPlanListResponse(BaseModel):
     """Paginated test plan list response."""
 
-    items: List[TestPlanResponse]
+    items: list[TestPlanResponse]
     total: int
     page: int
     pageSize: int  # noqa: N815
@@ -62,4 +61,4 @@ class ScenarioInPlan(BaseModel):
 class TestPlanDetailResponse(TestPlanResponse):
     """Test plan detail response with scenarios."""
 
-    scenarios: List[ScenarioInPlan] = []
+    scenarios: list[ScenarioInPlan] = []

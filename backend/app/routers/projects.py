@@ -1,6 +1,6 @@
 """Project router."""
 
-from typing import Annotated, Optional
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -37,7 +37,7 @@ async def get_project_service(
 async def list_projects(
     page: Annotated[int, Query(ge=1, description="页码")] = 1,
     pageSize: Annotated[int, Query(ge=1, le=100, description="每页条数")] = 10,  # noqa: N803
-    name: Annotated[Optional[str], Query(description="项目名称(模糊搜索)")] = None,
+    name: Annotated[str | None, Query(description="项目名称(模糊搜索)")] = None,
     current_user: User = Depends(get_current_user),
     project_service: ProjectService = Depends(get_project_service),
 ):

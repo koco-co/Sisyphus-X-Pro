@@ -23,12 +23,12 @@ from app.routers import (
     test_plans,
     upload,
 )
-from app.services.global_param_service import GlobalParamService
-from app.services.report_scheduler import init_report_scheduler, shutdown_report_scheduler
 from app.services.db_connection_scheduler import (
     init_db_connection_scheduler,
     shutdown_db_connection_scheduler,
 )
+from app.services.global_param_service import GlobalParamService
+from app.services.report_scheduler import init_report_scheduler, shutdown_report_scheduler
 
 
 @asynccontextmanager

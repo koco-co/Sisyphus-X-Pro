@@ -1,8 +1,8 @@
 """Scenario model."""
 
-from typing import Any, Optional
+from typing import Any
 
-from sqlalchemy import JSON, ForeignKey, Index, Integer, String, Text
+from sqlalchemy import JSON, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -22,15 +22,15 @@ class Scenario(Base, TimestampMixin):
         Integer, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False, index=True
     )
     name: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
-    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
     priority: Mapped[str] = mapped_column(
         String(5), nullable=False, default="P2", index=True
     )  # P0/P1/P2/P3
-    tags: Mapped[Optional[dict[str, Any]]] = mapped_column(JSON, default=dict)  # 标签数组
-    pre_sql: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # 前置 SQL
-    post_sql: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # 后置 SQL
-    variables: Mapped[Optional[dict[str, Any]]] = mapped_column(JSON, default=dict)  # 变量定义列表
-    environment_id: Mapped[Optional[int]] = mapped_column(
+    tags: Mapped[dict[str, Any] | None] = mapped_column(JSON, default=dict)  # 标签数组
+    pre_sql: Mapped[str | None] = mapped_column(Text, nullable=True)  # 前置 SQL
+    post_sql: Mapped[str | None] = mapped_column(Text, nullable=True)  # 后置 SQL
+    variables: Mapped[dict[str, Any] | None] = mapped_column(JSON, default=dict)  # 变量定义列表
+    environment_id: Mapped[int | None] = mapped_column(
         Integer, ForeignKey("environments.id", ondelete="SET NULL"), nullable=True
     )
     creator_id: Mapped[int] = mapped_column(

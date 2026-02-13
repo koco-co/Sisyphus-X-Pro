@@ -1,6 +1,6 @@
 """Interface model."""
 
-from typing import Any, Optional
+from typing import Any
 
 from sqlalchemy import JSON, ForeignKey, Index, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
@@ -21,15 +21,15 @@ class Interface(Base, TimestampMixin):
     project_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False
     )
-    folder_id: Mapped[Optional[int]] = mapped_column(
+    folder_id: Mapped[int | None] = mapped_column(
         Integer, ForeignKey("interface_folders.id", ondelete="CASCADE"), nullable=True
     )
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     method: Mapped[str] = mapped_column(String(10), nullable=False)  # GET/POST/PUT/DELETE/PATCH
     path: Mapped[str] = mapped_column(String(500), nullable=False)
-    headers: Mapped[Optional[dict[str, Any]]] = mapped_column(JSON, default=dict)
-    params: Mapped[Optional[dict[str, Any]]] = mapped_column(JSON, default=dict)  # Query parameters
-    body: Mapped[Optional[dict[str, Any]]] = mapped_column(JSON, default=dict)
+    headers: Mapped[dict[str, Any] | None] = mapped_column(JSON, default=dict)
+    params: Mapped[dict[str, Any] | None] = mapped_column(JSON, default=dict)  # Query parameters
+    body: Mapped[dict[str, Any] | None] = mapped_column(JSON, default=dict)
     body_type: Mapped[str] = mapped_column(
         String(20), nullable=False, default="json"
     )  # json/form-data/raw

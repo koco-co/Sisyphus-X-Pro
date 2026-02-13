@@ -1,7 +1,7 @@
 """Keyword-related schemas."""
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -19,7 +19,7 @@ class KeywordBase(BaseModel):
         description="方法名(字母开头,仅含字母数字下划线)",
     )
     code: str = Field(..., min_length=1, description="Python 代码块")
-    params: List[Dict[str, Any]] = Field(
+    params: list[dict[str, Any]] = Field(
         default=[], description="参数列表 [{name, description}]"
     )
 
@@ -33,11 +33,11 @@ class KeywordCreate(KeywordBase):
 class KeywordUpdate(BaseModel):
     """Keyword update schema."""
 
-    type: Optional[str] = Field(None, min_length=1, max_length=50)
-    name: Optional[str] = Field(None, min_length=1, max_length=200)
-    method_name: Optional[str] = Field(None, min_length=1, max_length=200)
-    code: Optional[str] = Field(None, min_length=1)
-    params: Optional[List[Dict[str, Any]]] = None
+    type: str | None = Field(None, min_length=1, max_length=50)
+    name: str | None = Field(None, min_length=1, max_length=200)
+    method_name: str | None = Field(None, min_length=1, max_length=200)
+    code: str | None = Field(None, min_length=1)
+    params: list[dict[str, Any]] | None = None
 
 
 class KeywordResponse(KeywordBase):
@@ -54,7 +54,7 @@ class KeywordResponse(KeywordBase):
 class KeywordListResponse(BaseModel):
     """Paginated keyword list response."""
 
-    items: List[KeywordResponse]
+    items: list[KeywordResponse]
     total: int
     page: int
     pageSize: int  # noqa: N815
@@ -63,7 +63,7 @@ class KeywordListResponse(BaseModel):
 class KeywordEnabledResponse(BaseModel):
     """Enabled keywords grouped by type."""
 
-    keywords: Dict[str, List[KeywordResponse]]
+    keywords: dict[str, list[KeywordResponse]]
 
 
 class DocstringParseRequest(BaseModel):
@@ -76,15 +76,15 @@ class DocstringParam(BaseModel):
     """Parameter extracted from docstring."""
 
     name: str
-    type: Optional[str] = None
+    type: str | None = None
     description: str = ""
-    default: Optional[str] = None
+    default: str | None = None
 
 
 class DocstringParseResponse(BaseModel):
     """Response from docstring parsing."""
 
-    function_name: Optional[str] = None
-    params: List[DocstringParam] = []
+    function_name: str | None = None
+    params: list[DocstringParam] = []
     description: str = ""
-    error: Optional[str] = None
+    error: str | None = None

@@ -1,6 +1,6 @@
 """Scenario step model."""
 
-from typing import Any, Optional
+from typing import Any
 
 from sqlalchemy import JSON, ForeignKey, Index, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -26,7 +26,7 @@ class ScenarioStep(Base, TimestampMixin):
     keyword_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("keywords.id", ondelete="RESTRICT"), nullable=False
     )
-    params: Mapped[Optional[dict[str, Any]]] = mapped_column(JSON, default=dict)  # 动态关键字参数
+    params: Mapped[dict[str, Any] | None] = mapped_column(JSON, default=dict)  # 动态关键字参数
 
     # Relationships
     scenario = relationship("Scenario", back_populates="steps")

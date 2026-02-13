@@ -8,7 +8,9 @@ Run this script after updating the User model.
 """
 
 import asyncio
+
 from sqlalchemy import text
+
 from app.database import engine
 
 

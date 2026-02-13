@@ -1,8 +1,8 @@
 """Interface folder model."""
 
+
 from sqlalchemy import ForeignKey, Index, Integer
 from sqlalchemy.orm import Mapped, mapped_column
-from typing import Optional
 
 from app.database import Base
 from app.models.base import TimestampMixin
@@ -17,7 +17,7 @@ class InterfaceFolder(Base, TimestampMixin):
     project_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False
     )
-    parent_id: Mapped[Optional[int]] = mapped_column(
+    parent_id: Mapped[int | None] = mapped_column(
         Integer, ForeignKey("interface_folders.id", ondelete="CASCADE"), nullable=True
     )
     name: Mapped[str] = mapped_column(nullable=False)

@@ -1,6 +1,6 @@
 """Global parameter router."""
 
-from typing import Annotated, Optional
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -40,8 +40,8 @@ async def get_global_param_service(
 async def list_global_params(
     page: Annotated[int, Query(ge=1, description="页码")] = 1,
     pageSize: Annotated[int, Query(ge=1, le=100, description="每页条数")] = 10,  # noqa: N803
-    class_name: Annotated[Optional[str], Query(description="类名")] = None,
-    is_builtin: Annotated[Optional[bool], Query(description="是否内置")] = None,
+    class_name: Annotated[str | None, Query(description="类名")] = None,
+    is_builtin: Annotated[bool | None, Query(description="是否内置")] = None,
     current_user: User = Depends(get_current_user),
     service: GlobalParamService = Depends(get_global_param_service),
 ):

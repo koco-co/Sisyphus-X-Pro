@@ -1,7 +1,7 @@
 """Interface service for business logic."""
 
 import shlex
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -32,7 +32,7 @@ class InterfaceService:
 
     # ============== Tree Structure ==============
 
-    async def get_interface_tree(self, project_id: int) -> List[InterfaceTreeNode]:
+    async def get_interface_tree(self, project_id: int) -> list[InterfaceTreeNode]:
         """Get full interface tree for a project.
 
         Args:
@@ -58,8 +58,8 @@ class InterfaceService:
         interfaces = interface_result.scalars().all()
 
         # Build tree structure
-        folder_map: Dict[int, InterfaceTreeNode] = {}
-        root_nodes: List[InterfaceTreeNode] = []
+        folder_map: dict[int, InterfaceTreeNode] = {}
+        root_nodes: list[InterfaceTreeNode] = []
 
         # First pass: create folder nodes
         for folder in folders:
@@ -106,7 +106,7 @@ class InterfaceService:
 
     # ============== Folder CRUD ==============
 
-    async def get_folder_by_id(self, folder_id: int) -> Optional[InterfaceFolder]:
+    async def get_folder_by_id(self, folder_id: int) -> InterfaceFolder | None:
         """Get folder by ID.
 
         Args:
@@ -141,7 +141,7 @@ class InterfaceService:
 
     async def update_folder(
         self, folder_id: int, folder_in: InterfaceFolderUpdate
-    ) -> Optional[InterfaceFolder]:
+    ) -> InterfaceFolder | None:
         """Update folder.
 
         Args:
@@ -185,7 +185,7 @@ class InterfaceService:
 
     async def list_interfaces(
         self, project_id: int, skip: int = 0, limit: int = 100
-    ) -> tuple[List[Interface], int]:
+    ) -> tuple[list[Interface], int]:
         """List interfaces for a project.
 
         Args:
@@ -208,7 +208,7 @@ class InterfaceService:
 
         return list(interfaces), total
 
-    async def get_interface_by_id(self, interface_id: int) -> Optional[Interface]:
+    async def get_interface_by_id(self, interface_id: int) -> Interface | None:
         """Get interface by ID.
 
         Args:
@@ -249,7 +249,7 @@ class InterfaceService:
 
     async def update_interface(
         self, interface_id: int, interface_in: InterfaceUpdate
-    ) -> Optional[Interface]:
+    ) -> Interface | None:
         """Update interface.
 
         Args:
@@ -290,7 +290,7 @@ class InterfaceService:
 
     # ============== Batch Operations ==============
 
-    async def batch_reorder(self, reorder_in: InterfaceReorderRequest) -> Dict[str, Any]:
+    async def batch_reorder(self, reorder_in: InterfaceReorderRequest) -> dict[str, Any]:
         """Batch reorder interfaces and folders.
 
         Args:
@@ -356,7 +356,7 @@ class InterfaceService:
         await self.db.refresh(interface)
         return interface
 
-    def _parse_curl(self, curl_command: str) -> Dict[str, Any]:
+    def _parse_curl(self, curl_command: str) -> dict[str, Any]:
         """Parse cURL command into interface components.
 
         Args:
@@ -368,7 +368,7 @@ class InterfaceService:
         Raises:
             ValueError: If cURL command is invalid
         """
-        result: Dict[str, Any] = {
+        result: dict[str, Any] = {
             "method": "GET",
             "path": "/",
             "headers": {},

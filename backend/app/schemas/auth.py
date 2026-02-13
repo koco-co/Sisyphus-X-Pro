@@ -1,7 +1,6 @@
 """Authentication schemas."""
 
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
@@ -30,11 +29,11 @@ class UserResponse(UserBase):
     """User response schema."""
 
     id: int
-    avatar: Optional[str] = None
+    avatar: str | None = None
     provider: str = "email"
     is_active: bool = True
     created_at: datetime
-    locked_until: Optional[datetime] = None
+    locked_until: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -43,7 +42,7 @@ class Token(BaseModel):
     """JWT token response schema."""
 
     access_token: str
-    refresh_token: Optional[str] = None
+    refresh_token: str | None = None
     token_type: str = "bearer"
     user: UserResponse
 
@@ -51,5 +50,5 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     """Token data schema."""
 
-    user_id: Optional[int] = None
-    email: Optional[str] = None
+    user_id: int | None = None
+    email: str | None = None

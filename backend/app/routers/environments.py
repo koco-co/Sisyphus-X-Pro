@@ -1,6 +1,6 @@
 """Environment management router."""
 
-from typing import Annotated, List
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -36,7 +36,7 @@ def get_environment_service(db: Annotated[AsyncSession, Depends(get_db)]) -> Env
 
 # ============== Environment Endpoints ==============
 
-@router.get("", response_model=List[EnvironmentResponse])
+@router.get("", response_model=list[EnvironmentResponse])
 async def list_environments(
     project_id: int = Query(..., description="Project ID"),
     skip: int = Query(0, ge=0, description="Number of records to skip"),
@@ -128,7 +128,7 @@ async def delete_environment(
 
 # ============== Environment Variable Endpoints ==============
 
-@router.get("/{environment_id}/variables", response_model=List[EnvVariableResponse])
+@router.get("/{environment_id}/variables", response_model=list[EnvVariableResponse])
 async def list_env_variables(
     environment_id: int,
     skip: int = Query(0, ge=0),
@@ -203,7 +203,7 @@ async def delete_env_variable(
 
 # ============== Global Variable Endpoints ==============
 
-@router.get("/global/variables", response_model=List[GlobalVariableResponse])
+@router.get("/global/variables", response_model=list[GlobalVariableResponse])
 async def list_global_variables(
     project_id: int = Query(..., description="Project ID"),
     skip: int = Query(0, ge=0),

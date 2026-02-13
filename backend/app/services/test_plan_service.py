@@ -1,6 +1,6 @@
 """Test plan service for business logic."""
 
-from typing import List, Optional
+
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -26,9 +26,9 @@ class TestPlanService:
         self,
         skip: int = 0,
         limit: int = 100,
-        name: Optional[str] = None,
-        project_id: Optional[int] = None,
-    ) -> tuple[List[TestPlan], int]:
+        name: str | None = None,
+        project_id: int | None = None,
+    ) -> tuple[list[TestPlan], int]:
         """List test plans with pagination and filtering.
 
         Args:
@@ -67,7 +67,7 @@ class TestPlanService:
 
         return list(test_plans), total
 
-    async def get_test_plan_by_id(self, plan_id: int) -> Optional[TestPlan]:
+    async def get_test_plan_by_id(self, plan_id: int) -> TestPlan | None:
         """Get test plan by ID with scenarios.
 
         Args:
@@ -86,7 +86,7 @@ class TestPlanService:
         )
         return result.scalar_one_or_none()
 
-    async def get_test_plan_with_scenarios(self, plan_id: int) -> Optional[TestPlan]:
+    async def get_test_plan_with_scenarios(self, plan_id: int) -> TestPlan | None:
         """Get test plan by ID with scenarios.
 
         Args:
@@ -164,7 +164,7 @@ class TestPlanService:
 
     async def update_test_plan(
         self, plan_id: int, plan_in: TestPlanUpdate
-    ) -> Optional[TestPlan]:
+    ) -> TestPlan | None:
         """Update test plan.
 
         Args:
@@ -258,8 +258,8 @@ class TestPlanService:
         return plan_scenario
 
     async def reorder_scenarios(
-        self, plan_id: int, scenario_orders: List[dict]
-    ) -> List[PlanScenario]:
+        self, plan_id: int, scenario_orders: list[dict]
+    ) -> list[PlanScenario]:
         """Reorder scenarios in test plan.
 
         Args:
@@ -316,7 +316,7 @@ class TestPlanService:
         await self.db.flush()
         return True
 
-    async def get_plan_scenarios(self, plan_id: int) -> List[dict]:
+    async def get_plan_scenarios(self, plan_id: int) -> list[dict]:
         """Get all scenarios in test plan.
 
         Args:

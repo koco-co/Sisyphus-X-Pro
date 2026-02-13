@@ -1,7 +1,7 @@
 """Scenario schemas for request/response validation."""
 
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -23,10 +23,10 @@ class ScenarioStepCreate(ScenarioStepBase):
 class ScenarioStepUpdate(BaseModel):
     """Schema for updating a scenario step."""
 
-    description: Optional[str] = Field(None, min_length=1, max_length=500)
-    keyword_id: Optional[int] = Field(None, gt=0)
-    params: Optional[dict[str, Any]] = None
-    sort_order: Optional[int] = Field(None, ge=0)
+    description: str | None = Field(None, min_length=1, max_length=500)
+    keyword_id: int | None = Field(None, gt=0)
+    params: dict[str, Any] | None = None
+    sort_order: int | None = Field(None, ge=0)
 
 
 class ScenarioStepResponse(ScenarioStepBase):
@@ -46,13 +46,13 @@ class ScenarioBase(BaseModel):
     """Base schema for scenario."""
 
     name: str = Field(..., min_length=1, max_length=200, description="场景名称")
-    description: Optional[str] = Field(None, max_length=1000, description="场景描述")
+    description: str | None = Field(None, max_length=1000, description="场景描述")
     priority: str = Field("P2", pattern="^P[0-3]$", description="优先级 (P0/P1/P2/P3)")
     tags: dict[str, Any] = Field(default_factory=dict, description="标签")
-    pre_sql: Optional[str] = Field(None, description="前置SQL")
-    post_sql: Optional[str] = Field(None, description="后置SQL")
+    pre_sql: str | None = Field(None, description="前置SQL")
+    post_sql: str | None = Field(None, description="后置SQL")
     variables: dict[str, Any] = Field(default_factory=dict, description="变量定义")
-    environment_id: Optional[int] = Field(None, gt=0, description="环境ID")
+    environment_id: int | None = Field(None, gt=0, description="环境ID")
 
 
 class ScenarioCreate(ScenarioBase):
@@ -65,14 +65,14 @@ class ScenarioCreate(ScenarioBase):
 class ScenarioUpdate(BaseModel):
     """Schema for updating a scenario."""
 
-    name: Optional[str] = Field(None, min_length=1, max_length=200)
-    description: Optional[str] = Field(None, max_length=1000)
-    priority: Optional[str] = Field(None, pattern="^P[0-3]$")
-    tags: Optional[dict[str, Any]] = None
-    pre_sql: Optional[str] = None
-    post_sql: Optional[str] = None
-    variables: Optional[dict[str, Any]] = None
-    environment_id: Optional[int] = Field(None, gt=0)
+    name: str | None = Field(None, min_length=1, max_length=200)
+    description: str | None = Field(None, max_length=1000)
+    priority: str | None = Field(None, pattern="^P[0-3]$")
+    tags: dict[str, Any] | None = None
+    pre_sql: str | None = None
+    post_sql: str | None = None
+    variables: dict[str, Any] | None = None
+    environment_id: int | None = Field(None, gt=0)
 
 
 class ScenarioResponse(ScenarioBase):
@@ -94,7 +94,7 @@ class ScenarioListResponse(BaseModel):
 
     id: int
     name: str
-    description: Optional[str]
+    description: str | None
     priority: str
     tags: dict[str, Any]
     created_at: datetime

@@ -4,9 +4,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database import get_db
 from app.services.upload_service import UploadService
 
 router = APIRouter(prefix="/upload", tags=["upload"])

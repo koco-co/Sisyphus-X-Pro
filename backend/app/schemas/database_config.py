@@ -1,7 +1,7 @@
 """Database configuration schemas."""
 
 from datetime import datetime
-from typing import List, Literal, Optional
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -34,19 +34,19 @@ class DatabaseConfigCreate(DatabaseConfigBase):
 class DatabaseConfigUpdate(BaseModel):
     """Database config update schema."""
 
-    name: Optional[str] = Field(None, min_length=1, max_length=200)
-    variable_name: Optional[str] = Field(
+    name: str | None = Field(None, min_length=1, max_length=200)
+    variable_name: str | None = Field(
         None,
         min_length=1,
         max_length=100,
         pattern=r"^[a-zA-Z_][a-zA-Z0-9_]*$",
     )
-    db_type: Optional[Literal["mysql", "postgresql"]] = None
-    host: Optional[str] = Field(None, min_length=1, max_length=255)
-    port: Optional[int] = Field(None, gt=0, le=65535)
-    database: Optional[str] = Field(None, min_length=1, max_length=255)
-    username: Optional[str] = Field(None, min_length=1, max_length=255)
-    password: Optional[str] = Field(None, min_length=1, max_length=255)
+    db_type: Literal["mysql", "postgresql"] | None = None
+    host: str | None = Field(None, min_length=1, max_length=255)
+    port: int | None = Field(None, gt=0, le=65535)
+    database: str | None = Field(None, min_length=1, max_length=255)
+    username: str | None = Field(None, min_length=1, max_length=255)
+    password: str | None = Field(None, min_length=1, max_length=255)
 
 
 class DatabaseConfigResponse(BaseModel):
@@ -65,8 +65,8 @@ class DatabaseConfigResponse(BaseModel):
     is_connected: bool
     is_enabled: bool
     created_at: datetime
-    last_check_at: Optional[datetime] = None
-    last_error: Optional[str] = None
+    last_check_at: datetime | None = None
+    last_error: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -74,7 +74,7 @@ class DatabaseConfigResponse(BaseModel):
 class DatabaseConfigListResponse(BaseModel):
     """Paginated database config list response."""
 
-    items: List[DatabaseConfigResponse]
+    items: list[DatabaseConfigResponse]
     total: int
     page: int
     pageSize: int  # noqa: N815

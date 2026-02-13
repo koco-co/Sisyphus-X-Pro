@@ -1,7 +1,7 @@
 """Database configuration service."""
 
 import asyncio
-from typing import List, Literal, Optional
+from typing import Literal
 
 import aiomysql
 import asyncpg
@@ -32,7 +32,7 @@ class DatabaseConfigService:
         project_id: int,
         skip: int = 0,
         limit: int = 100,
-    ) -> tuple[List[DatabaseConfig], int]:
+    ) -> tuple[list[DatabaseConfig], int]:
         """List database configs for a project.
 
         Args:
@@ -66,7 +66,7 @@ class DatabaseConfigService:
 
     async def get_db_config_by_id(
         self, config_id: int
-    ) -> Optional[DatabaseConfig]:
+    ) -> DatabaseConfig | None:
         """Get database config by ID.
 
         Args:
@@ -131,7 +131,7 @@ class DatabaseConfigService:
 
     async def update_db_config(
         self, config_id: int, config_in: DatabaseConfigUpdate
-    ) -> Optional[DatabaseConfig]:
+    ) -> DatabaseConfig | None:
         """Update database config.
 
         Args:
@@ -262,7 +262,7 @@ class DatabaseConfigService:
 
         return False, "不支持的数据库类型"
 
-    async def toggle_enabled(self, config_id: int, is_enabled: bool) -> Optional[DatabaseConfig]:
+    async def toggle_enabled(self, config_id: int, is_enabled: bool) -> DatabaseConfig | None:
         """Toggle database config enabled status.
 
         Args:
@@ -281,7 +281,7 @@ class DatabaseConfigService:
         await self.db.refresh(config)
         return config
 
-    async def get_all_configs(self) -> List[DatabaseConfig]:
+    async def get_all_configs(self) -> list[DatabaseConfig]:
         """Get all database configs.
 
         Returns:
@@ -294,8 +294,8 @@ class DatabaseConfigService:
         self,
         config_id: int,
         is_connected: bool,
-        last_error: Optional[str] = None,
-    ) -> Optional[DatabaseConfig]:
+        last_error: str | None = None,
+    ) -> DatabaseConfig | None:
         """Update database connection status.
 
         Args:

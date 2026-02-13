@@ -1,6 +1,6 @@
 """Interface management router."""
 
-from typing import Annotated, List
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -38,7 +38,7 @@ def get_interface_service(db: Annotated[AsyncSession, Depends(get_db)]) -> Inter
 
 # ============== Tree Structure ==============
 
-@router.get("/tree", response_model=List[InterfaceTreeNode])
+@router.get("/tree", response_model=list[InterfaceTreeNode])
 async def get_interface_tree(
     project_id: int = Query(..., description="Project ID"),
     service: InterfaceService = Depends(get_interface_service),
@@ -132,7 +132,7 @@ async def delete_folder(
 
 # ============== Interface Endpoints ==============
 
-@router.get("", response_model=List[InterfaceResponse])
+@router.get("", response_model=list[InterfaceResponse])
 async def list_interfaces(
     project_id: int = Query(..., description="Project ID"),
     skip: int = Query(0, ge=0, description="Number of records to skip"),

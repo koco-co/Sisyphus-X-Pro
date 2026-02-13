@@ -1,6 +1,6 @@
 """Environment service for business logic."""
 
-from typing import List, Optional
+
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -28,7 +28,7 @@ class EnvironmentService:
 
     async def list_environments(
         self, project_id: int, skip: int = 0, limit: int = 100
-    ) -> tuple[List[Environment], int]:
+    ) -> tuple[list[Environment], int]:
         """List environments for a project.
 
         Args:
@@ -54,7 +54,7 @@ class EnvironmentService:
 
         return list(environments), total
 
-    async def get_environment_by_id(self, environment_id: int) -> Optional[Environment]:
+    async def get_environment_by_id(self, environment_id: int) -> Environment | None:
         """Get environment by ID.
 
         Args:
@@ -91,7 +91,7 @@ class EnvironmentService:
 
     async def update_environment(
         self, environment_id: int, env_in: EnvironmentUpdate
-    ) -> Optional[Environment]:
+    ) -> Environment | None:
         """Update environment.
 
         Args:
@@ -134,7 +134,7 @@ class EnvironmentService:
 
     async def list_env_variables(
         self, environment_id: int, skip: int = 0, limit: int = 100
-    ) -> tuple[List[EnvVariable], int]:
+    ) -> tuple[list[EnvVariable], int]:
         """List environment variables.
 
         Args:
@@ -158,7 +158,7 @@ class EnvironmentService:
         return list(variables), total
 
     async def create_env_variable(
-        self, environment_id: int, name: str, value: str, description: Optional[str] = None
+        self, environment_id: int, name: str, value: str, description: str | None = None
     ) -> EnvVariable:
         """Create new environment variable.
 
@@ -206,7 +206,7 @@ class EnvironmentService:
 
     async def list_global_variables(
         self, project_id: int, skip: int = 0, limit: int = 100
-    ) -> tuple[List[GlobalVariable], int]:
+    ) -> tuple[list[GlobalVariable], int]:
         """List global variables for a project.
 
         Args:
@@ -230,7 +230,7 @@ class EnvironmentService:
         return list(variables), total
 
     async def create_global_variable(
-        self, project_id: int, name: str, value: str, description: Optional[str] = None
+        self, project_id: int, name: str, value: str, description: str | None = None
     ) -> GlobalVariable:
         """Create new global variable.
 

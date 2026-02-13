@@ -8,7 +8,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.schemas.scenario import (
     CSVUploadResponse,
-    DatasetCreate,
     DatasetResponse,
     ScenarioCreate,
     ScenarioListResponse,
@@ -238,6 +237,7 @@ async def list_steps(
 
     # Get steps ordered by sort_order
     from sqlalchemy import select
+
     from app.models.scenario_step import ScenarioStep
 
     result = await service.session.execute(

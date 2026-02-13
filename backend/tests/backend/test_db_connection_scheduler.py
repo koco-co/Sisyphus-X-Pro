@@ -185,10 +185,16 @@ async def test_check_now(db_connection_scheduler, mock_configs, mock_session_fac
 
 @pytest.mark.asyncio
 async def test_set_check_interval(db_connection_scheduler):
-    """Test setting check interval."""
+    """Test setting check interval (when scheduler is running)."""
+    db_connection_scheduler.start()
+
+    # Change interval
     db_connection_scheduler.set_check_interval(5)
 
     assert db_connection_scheduler.check_interval_minutes == 5
+
+    # Cleanup
+    await db_connection_scheduler.scheduler.shutdown(wait=True)
 
 
 def test_set_check_interval_invalid(db_connection_scheduler):

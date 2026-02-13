@@ -1,7 +1,6 @@
 """Project-related schemas."""
 
 from datetime import datetime
-from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -10,7 +9,7 @@ class ProjectBase(BaseModel):
     """Base project schema."""
 
     name: str = Field(..., min_length=1, max_length=200, description="项目名称")
-    description: Optional[str] = Field(None, max_length=1000, description="项目描述")
+    description: str | None = Field(None, max_length=1000, description="项目描述")
 
 
 class ProjectCreate(ProjectBase):
@@ -22,8 +21,8 @@ class ProjectCreate(ProjectBase):
 class ProjectUpdate(BaseModel):
     """Project update schema."""
 
-    name: Optional[str] = Field(None, min_length=1, max_length=200)
-    description: Optional[str] = Field(None, max_length=1000)
+    name: str | None = Field(None, min_length=1, max_length=200)
+    description: str | None = Field(None, max_length=1000)
 
 
 class ProjectResponse(ProjectBase):
@@ -40,7 +39,7 @@ class ProjectResponse(ProjectBase):
 class ProjectListResponse(BaseModel):
     """Paginated project list response."""
 
-    items: List[ProjectResponse]
+    items: list[ProjectResponse]
     total: int
     page: int
     pageSize: int  # noqa: N815
