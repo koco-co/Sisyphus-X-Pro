@@ -259,7 +259,9 @@ def _unparse_ast(node: ast.AST) -> Any:
                 return [_unparse_ast(e) for e in node.elts]
             elif isinstance(node, ast.Dict):
                 result: dict[Any, Any] = {}
-                for k, v in zip(node.keys, node.values, strict=False):
+                # Use strict=False to handle cases where keys/values might have different lengths
+                keys_values = zip(node.keys, node.values, strict=False)  # type: ignore[call-arg]
+                for k, v in keys_values:
                     if isinstance(k, ast.AST) and isinstance(v, ast.AST):
                         k_result = _unparse_ast(k)
                         v_result = _unparse_ast(v)
