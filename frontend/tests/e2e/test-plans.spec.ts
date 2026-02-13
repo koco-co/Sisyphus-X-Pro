@@ -43,6 +43,7 @@ test.describe('PLAN 模块: 测试计划', () => {
 
   test('PLAN-001: 应该能够创建测试计划', async ({ page }) => {
     // 导航到测试计划页面
+    await page.click('button:has([class*="avatar"])')
     await page.click('text=测试计划')
 
     // 点击创建计划按钮
@@ -64,6 +65,7 @@ test.describe('PLAN 模块: 测试计划', () => {
   })
 
   test('PLAN-002: 应该能够添加场景到计划', async ({ page }) => {
+    await page.click('button:has([class*="avatar"])')
     await page.click('text=测试计划')
 
     // 选择一个测试计划
@@ -88,6 +90,7 @@ test.describe('PLAN 模块: 测试计划', () => {
   })
 
   test('PLAN-003: 应该能够调整场景执行顺序', async ({ page }) => {
+    await page.click('button:has([class*="avatar"])')
     await page.click('text=测试计划')
 
     // 选择一个有多个场景的计划
@@ -110,6 +113,7 @@ test.describe('PLAN 模块: 测试计划', () => {
   })
 
   test('PLAN-004: 应该能够配置执行参数', async ({ page }) => {
+    await page.click('button:has([class*="avatar"])')
     await page.click('text=测试计划')
     await page.locator('[data-testid="plan-item"]').first().click()
 
@@ -134,6 +138,7 @@ test.describe('PLAN 模块: 测试计划', () => {
   })
 
   test('PLAN-005: 应该能够执行测试计划', async ({ page }) => {
+    await page.click('button:has([class*="avatar"])')
     await page.click('text=测试计划')
     await page.locator('[data-testid="plan-item"]').first().click()
 
@@ -152,6 +157,7 @@ test.describe('PLAN 模块: 测试计划', () => {
   })
 
   test('PLAN-006: 应该能够实时监控执行进度', async ({ page }) => {
+    await page.click('button:has([class*="avatar"])')
     await page.click('text=测试计划')
     await page.locator('[data-testid="plan-item"]').first().click()
     await page.click('button:has-text("执行测试")')
@@ -173,6 +179,7 @@ test.describe('PLAN 模块: 测试计划', () => {
   })
 
   test('PLAN-007: 应该能够暂停执行', async ({ page }) => {
+    await page.click('button:has([class*="avatar"])')
     await page.click('text=测试计划')
     await page.locator('[data-testid="plan-item"]').first().click()
     await page.click('button:has-text("执行测试")')
@@ -189,6 +196,7 @@ test.describe('PLAN 模块: 测试计划', () => {
   })
 
   test('PLAN-008: 应该能够终止执行', async ({ page }) => {
+    await page.click('button:has([class*="avatar"])')
     await page.click('text=测试计划')
     await page.locator('[data-testid="plan-item"]').first().click()
     await page.click('button:has-text("执行测试")')
@@ -209,6 +217,7 @@ test.describe('PLAN 模块: 测试计划', () => {
   })
 
   test('PLAN-009: 应该能够查看执行历史', async ({ page }) => {
+    await page.click('button:has([class*="avatar"])')
     await page.click('text=测试计划')
     await page.locator('[data-testid="plan-item"]').first().click()
 

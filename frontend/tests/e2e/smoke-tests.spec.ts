@@ -49,6 +49,7 @@ test.describe('冒烟测试: 核心功能验证', () => {
     await page.click('button[type="submit"]')
 
     // 导航到项目管理
+    await page.click('button:has([class*="avatar"])')
     await page.click('text=项目管理')
     await expect(page.locator('h1')).toContainText('项目')
   })
@@ -60,6 +61,7 @@ test.describe('冒烟测试: 核心功能验证', () => {
     await page.click('button[type="submit"]')
 
     // 导航到关键字配置
+    await page.click('button:has([class*="avatar"])')
     await page.click('text=关键字配置')
     await expect(page.locator('h1')).toContainText('关键字')
   })
@@ -71,6 +73,7 @@ test.describe('冒烟测试: 核心功能验证', () => {
     await page.click('button[type="submit"]')
 
     // 导航到接口定义
+    await page.click('button:has([class*="avatar"])')
     await page.click('text=接口定义')
     await expect(page.locator('h1')).toContainText('接口')
   })
@@ -82,7 +85,8 @@ test.describe('冒烟测试: 核心功能验证', () => {
     await page.click('button[type="submit"]')
 
     // 导航到场景配置
-    await page.click('text=场景配置')
+    await page.click('button:has([class*="avatar"])')
+    await page.click('text=场景编排')
     await expect(page.locator('h1')).toContainText('场景')
   })
 
@@ -93,6 +97,7 @@ test.describe('冒烟测试: 核心功能验证', () => {
     await page.click('button[type="submit"]')
 
     // 导航到测试计划
+    await page.click('button:has([class*="avatar"])')
     await page.click('text=测试计划')
     await expect(page.locator('h1')).toContainText('测试计划')
   })
@@ -104,6 +109,7 @@ test.describe('冒烟测试: 核心功能验证', () => {
     await page.click('button[type="submit"]')
 
     // 导航到测试报告
+    await page.click('button:has([class*="avatar"])')
     await page.click('text=测试报告')
     await expect(page.locator('h1')).toContainText('测试报告')
   })
@@ -115,6 +121,7 @@ test.describe('冒烟测试: 核心功能验证', () => {
     await page.click('button[type="submit"]')
 
     // 导航到全局参数
+    await page.click('button:has([class*="avatar"])')
     await page.click('text=全局参数')
     await expect(page.locator('h1')).toContainText('全局参数')
   })

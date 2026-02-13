@@ -1,12 +1,12 @@
 import { request, APIRequestContext } from '@playwright/test'
 
-const API_BASE_URL = 'http://localhost:8000/api'
+const API_BASE_URL = 'http://localhost:8000/api/v1'
 
 export class ApiHelper {
   static async createTestUser(email: string, password: string) {
     const context = await request.newContext()
     await context.post(`${API_BASE_URL}/auth/register`, {
-      data: { email, password },
+      data: { email, password, nickname: email.split('@')[0] },
     })
     await context.dispose()
   }

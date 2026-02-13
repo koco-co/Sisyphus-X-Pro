@@ -24,7 +24,7 @@ test.describe('SCEN 模块: 场景编排', () => {
   let dashboardPage: DashboardPage
   let projectId: string
 
-  test.beforeAll(async ({ page }) => {
+  test.beforeAll(async () => {
     await ApiHelper.createTestUser(testUser.email, testUser.password)
   })
 
@@ -33,12 +33,14 @@ test.describe('SCEN 模块: 场景编排', () => {
     dashboardPage = new DashboardPage(page)
 
     await authPage.login(testUser.email, testUser.password)
-    await expect(page).toHaveURL(/.*\/dashboard/)
+    // 登录后应该跳转到首页 (/),不是 /dashboard
+    await expect(page).toHaveURL('http://localhost:3000/')
   })
 
-  test.afterAll(async ({ page }) => {
+  test.afterAll(async () => {
     try {
-      const token = await authPage.getToken()
+      // 清理测试用户
+      const token = await ApiHelper.getUserToken(testUser.email, testUser.password)
       if (token) {
         await ApiHelper.deleteTestUser(testUser.email, token)
       }
@@ -48,24 +50,23 @@ test.describe('SCEN 模块: 场景编排', () => {
   })
 
   test('SCEN-001: 应该能够创建测试场景', async ({ page }) => {
-    // 创建测试项目
-    await page.click('text=项目管理')
-    await page.click('button:has-text("创建项目")')
+    // 创建测试项目 - 先打开用户菜单
+    await page.click('button:has([class*="avatar"])') // 点击用户头像打开菜单
+    await page.click('text=项目管理') // 点击菜单项
+    await page.click('button:has-text("新建项目")')
     await page.fill('[name="name"]', testProject.name)
     await page.fill('[name="description"]', testProject.description)
-    await page.click('button:has-text("提交")')
+    await page.click('button:has-text("创建")')
 
     // 等待项目创建成功
     await expect(page.locator(`text=${testProject.name}`)).toBeVisible()
 
-    // 导航到场景配置
-    await page.click('text=场景配置')
+    // 导航到场景配置 - 打开用户菜单
+    await page.click('button:has([class*="avatar"])')
+    await page.click('text=场景编排')
 
     // 点击创建场景按钮
-    await page.click('button:has-text("创建场景")')
-
-    // 选择项目
-    await page.selectOption('select[name="project"]', testProject.name)
+    await page.click('button:has-text("新建场景")')
 
     // 填写场景信息
     await page.fill('[name="name"]', testScenario.name)
@@ -75,12 +76,13 @@ test.describe('SCEN 模块: 场景编排', () => {
     await page.click('button:has-text("创建")')
 
     // 验证场景创建成功
-    await expect(page.locator('text=场景创建成功')).toBeVisible()
+    await expect(page.locator('text=创建成功')).toBeVisible()
     await expect(page.locator(`text=${testScenario.name}`)).toBeVisible()
   })
 
   test('SCEN-002: 应该能够拖拽排序步骤', async ({ page }) => {
-    await page.click('text=场景配置')
+    await page.click('button:has([class*="avatar"])')
+    await page.click('text=场景编排')
 
     // 选择一个已创建的场景
     const firstScenario = page.locator('[data-testid="scenario-item"]').first()
@@ -111,7 +113,8 @@ test.describe('SCEN 模块: 场景编排', () => {
   })
 
   test('SCEN-003: 应该支持三级联动选择器', async ({ page }) => {
-    await page.click('text=场景配置')
+    await page.click('button:has([class*="avatar"])')
+    await page.click('text=场景编排')
     await page.locator('[data-testid="scenario-item"]').first().click()
     await page.click('button:has-text("添加步骤")')
 
@@ -133,7 +136,8 @@ test.describe('SCEN 模块: 场景编排', () => {
   })
 
   test('SCEN-004: 应该能够配置步骤参数', async ({ page }) => {
-    await page.click('text=场景配置')
+    await page.click('button:has([class*="avatar"])')
+    await page.click('text=场景编排')
     await page.locator('[data-testid="scenario-item"]').first().click()
     await page.click('button:has-text("添加步骤")')
 
@@ -155,7 +159,8 @@ test.describe('SCEN 模块: 场景编排', () => {
   })
 
   test('SCEN-005: 应该能够配置前置 SQL', async ({ page }) => {
-    await page.click('text=场景配置')
+    await page.click('button:has([class*="avatar"])')
+    await page.click('text=场景编排')
     await page.locator('[data-testid="scenario-item"]').first().click()
 
     // 切换到前置 SQL 标签
@@ -171,7 +176,8 @@ test.describe('SCEN 模块: 场景编排', () => {
   })
 
   test('SCEN-006: 应该支持数据驱动测试', async ({ page }) => {
-    await page.click('text=场景配置')
+    await page.click('button:has([class*="avatar"])')
+    await page.click('text=场景编排')
     await page.locator('[data-testid="scenario-item"]').first().click()
 
     // 切换到数据驱动标签
@@ -194,7 +200,8 @@ test.describe('SCEN 模块: 场景编排', () => {
   })
 
   test('SCEN-007: 应该能够调试场景', async ({ page }) => {
-    await page.click('text=场景配置')
+    await page.click('button:has([class*="avatar"])')
+    await page.click('text=场景编排')
     await page.locator('[data-testid="scenario-item"]').first().click()
 
     // 点击调试按钮

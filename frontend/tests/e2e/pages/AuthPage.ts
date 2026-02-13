@@ -16,7 +16,7 @@ export class AuthPage {
     this.page = page
     this.emailInput = page.locator('input[type="email"], input[name="email"], input#email')
     this.passwordInput = page.locator('input[type="password"], input[name="password"], input#password')
-    this.submitButton = page.locator('button[type="submit"], button:has-text("登录"), button:has-text("注册")')
+    this.submitButton = page.locator('button[type="submit"]').first()
     this.githubButton = page.locator('button:has-text("GitHub"), a:has-text("GitHub")')
     this.googleButton = page.locator('button:has-text("Google"), a:has-text("Google")')
     this.logoutButton = page.locator('button:has-text("退出"), button:has-text("登出")')
