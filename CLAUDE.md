@@ -293,10 +293,93 @@ docs: 更新 README 安装指南
 - **黑盒测试**: 使用 Playwright,覆盖核心用户流程
 - 遵循 TDD 开发流程: 红 → 绿 → 重构
 
+## 无人值守 AI 开发流程
+
+本项目基于 Anthropic 的研究成果 **"Effective harnesses for long-running agents"** 构建了完整的无人值守 AI 开发流程。
+
+### 核心文件
+
+- `.claude/harness/feature_list.json` - 54 个功能的详细清单
+- `.claude/harness/init.sh` - 环境初始化脚本
+- `.claude/harness/quickstart.sh` - 一键快速启动
+- `.claude/harness/health_check.py` - 健康检查脚本
+- `.claude/harness/claude-progress.txt` - 进度追踪日志
+- `.claude/harness/coding_agent_prompt.md` - Coding Agent 工作指南
+- `HARNESS_GUIDE.md` - 快速开始指南 ⭐ 推荐先读
+
+### AI Agent 工作流程
+
+**每次会话开始时**:
+```bash
+# 1. 快速启动 (推荐)
+source .claude/harness/quickstart.sh
+
+# 2. 查看当前状态
+python .claude/harness/test_helper.py
+
+# 3. 选择下一个功能
+cat .claude/harness/feature_list.json
+```
+
+**实现功能时**:
+1. 阅读 `feature_list.json` 中功能的 `description` 和 `steps`
+2. **TDD 开发**: 先写测试,再实现代码
+3. **单元测试**: pytest,覆盖率 ≥ 80%
+4. **端到端测试**: 使用 Playwright 验证完整流程
+5. 更新 `feature_list.json` 中功能的 `passes: true`
+6. 创建 git commit 并推送
+
+**会话结束时**:
+- 运行代码检查 (ruff/pyright/ESLint)
+- 确保所有测试通过
+- 更新 `claude-progress.txt` 记录进展
+- 代码库必须处于干净可提交状态
+
+### 重要约束
+
+- ✅ 每次只实现一个功能
+- ✅ 未通过测试不能标记为完成
+- ✅ 只修改 `feature_list.json` 中的 `passes` 字段
+- ✅ 强制使用端到端测试验证
+
+### 功能优先级
+
+1. **AUTH-*** (用户认证) - 8 个功能 [最高优先级]
+2. **DASH-*** (首页仪表盘) - 3 个功能
+3. **PROJ-*** (项目管理) - 6 个功能
+4. **KEYW-*** (关键字配置) - 5 个功能
+5. **INTF-*** (接口定义) - 6 个功能
+6. **SCEN-*** (场景编排) - 7 个功能
+7. **PLAN-*** (测试计划) - 6 个功能
+8. **REPT-*** (测试报告) - 5 个功能
+9. **GPAR-*** (全局参数) - 4 个功能
+
+### Agent Teams 工作模式
+
+项目支持多 Agent 协作开发:
+- **planner** - 实现规划,识别依赖和风险
+- **tdd-guide** - 测试驱动开发专家,强制 80%+ 覆盖率
+- **code-reviewer** - 代码审查专家
+- **e2e-runner** - 端到端测试专家 (Playwright)
+
+创建团队:
+```bash
+# Team 将自动创建在 ~/.claude/teams/
+team_name: "sisyphus-development"
+```
+
 ## 相关文档
 
+### 开发文档
+- [HARNESS_GUIDE.md](./HARNESS_GUIDE.md) - 快速开始指南 ⭐
+- [.claude/harness/README.md](./.claude/harness/README.md) - 完整系统文档
+- [.claude/harness/SUMMARY.md](./.claude/harness/SUMMARY.md) - 实施总结
+
+### 项目文档
 - [需求文档](./temp/01_需求文档.md)
 - [接口定义](./temp/02_接口定义.md)
 - [数据库设计](./temp/03_数据库设计.md)
 - [任务清单](./temp/04_任务清单.md)
 - [变更日志](./CHANGELOG.md)
+
+### 参考资料
