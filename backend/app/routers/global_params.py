@@ -19,7 +19,7 @@ from app.schemas.global_param import (
 )
 from app.services.global_param_service import GlobalParamService
 
-router = APIRouter(prefix="/global-functions", tags=["Global Functions"])
+router = APIRouter(prefix="/global-params", tags=["Global Parameters"])
 
 
 async def get_global_param_service(

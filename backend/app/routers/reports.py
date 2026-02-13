@@ -22,6 +22,7 @@ router = APIRouter(prefix="/reports", tags=["reports"])
 
 @router.get("", response_model=ReportListResponse)
 async def get_reports(
+    project_id: int | None = Query(None, description="Filter by project ID"),
     plan_id: int | None = Query(None, description="Filter by plan ID"),
     status_filter: str | None = Query(None, alias="status", description="Filter by status"),
     page: int = Query(1, ge=1, description="Page number"),
@@ -31,6 +32,7 @@ async def get_reports(
     """Get paginated list of test reports.
 
     Args:
+        project_id: Filter by project ID (not yet implemented, ignored)
         plan_id: Filter by plan ID
         status_filter: Filter by status
         page: Page number (1-indexed)
