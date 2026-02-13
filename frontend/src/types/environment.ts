@@ -5,25 +5,27 @@ export interface Environment {
   project_id: string
   name: string
   base_url: string
-  is_default: boolean
   created_at: string
   updated_at: string
 }
 
-export interface EnvironmentVariable {
+export interface EnvVariable {
   id: string
-  env_id: string
-  key: string
+  environment_id: string
+  name: string
   value: string
   description?: string
+  created_at: string
+  updated_at: string
 }
 
 export interface GlobalVariable {
   id: string
   project_id: string
-  key: string
+  name: string
   value: string
   description?: string
+  source: 'manual' | 'extracted'
   created_at: string
   updated_at: string
 }

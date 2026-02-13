@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import DateTime, ForeignKey, Index, Integer, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 
@@ -43,6 +43,9 @@ class TestExecution(Base):
     )
 
     __table_args__ = ()
+
+    # Relationships
+    executor = relationship("User", back_populates="test_executions")
 
     def __repr__(self) -> str:
         return f"<TestExecution(id={self.id}, status={self.status})>"

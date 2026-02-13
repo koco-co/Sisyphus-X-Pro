@@ -3,6 +3,8 @@
 import asyncio
 from typing import List, Literal, Optional
 
+import aiomysql
+import asyncpg
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -207,15 +209,58 @@ class DatabaseConfigService:
             Tuple of (success: bool, message: str)
         """
         try:
-            # For now, return a mock test result
-            # In production, you would use asyncpg or aiomysql to test connection
-            await asyncio.sleep(0.1)  # Simulate connection attempt
+            if db_type == "mysql":
+                # Test MySQL connection
+                conn = await aiomysql.connect(
+                    host=host,
+                    port=port,
+                    user=username,
+                    password=password,
+                    db=database,
+                    connect_timeout=5,
+                )
+                await conn.ensure_closed()
+                return True, "连接成功"
 
-            # Mock successful connection
-            return True, "Connection successful"
+            elif db_type == "postgresql":
+                # Test PostgreSQL connection
+                conn = await asyncpg.connect(
+                    host=host,
+                    port=port,
+                    user=username,
+                    password=password,
+                    database=database,
+                    timeout=5,
+                )
+                await conn.close()
+                return True, "连接成功"
 
+        except asyncio.TimeoutError:
+            return False, "连接超时,请检查网络和主机地址"
+        except aiomysql.OperationalError as e:
+            error_msg = str(e)
+            if "Access denied" in error_msg:
+                return False, "用户名或密码错误"
+            elif "Unknown database" in error_msg:
+                return False, "数据库不存在"
+            elif "Can't connect to MySQL server" in error_msg:
+                return False, "无法连接到 MySQL 服务器,请检查主机和端口"
+            else:
+                return False, f"MySQL 连接失败: {error_msg}"
+        except asyncpg.PostgresError as e:
+            error_msg = str(e)
+            if "authentication failed" in error_msg.lower():
+                return False, "用户名或密码错误"
+            elif "database" in error_msg.lower() and "does not exist" in error_msg.lower():
+                return False, "数据库不存在"
+            elif "connection refused" in error_msg.lower():
+                return False, "无法连接到 PostgreSQL 服务器,请检查主机和端口"
+            else:
+                return False, f"PostgreSQL 连接失败: {error_msg}"
         except Exception as e:
-            return False, f"Connection failed: {str(e)}"
+            return False, f"连接失败: {str(e)}"
+
+        return False, "不支持的数据库类型"
 
     async def toggle_enabled(self, config_id: int, is_enabled: bool) -> Optional[DatabaseConfig]:
         """Toggle database config enabled status.

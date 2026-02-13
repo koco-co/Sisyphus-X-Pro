@@ -11,12 +11,13 @@ import {
 import type { DragEndEvent } from '@dnd-kit/core'
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { Plus, Folder, File, ChevronRight, ChevronDown, Play, Trash2 } from 'lucide-react'
+import { Plus, Folder, File, ChevronRight, ChevronDown, Play, Trash2, Terminal } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/Dialog'
+import { CurlImportDialog } from '@/components/CurlImportDialog'
 import type { InterfaceFolder, InterfaceItem, TreeNode } from '@/types/interface'
 
 export function InterfacesPage() {
@@ -29,6 +30,7 @@ export function InterfacesPage() {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set())
   const [newFolderDialogOpen, setNewFolderDialogOpen] = useState(false)
   const [newFolderName, setNewFolderName] = useState('')
+  const [curlDialogOpen, setCurlDialogOpen] = useState(false)
 
   // 拖拽传感器
   const sensors = useSensors(
@@ -209,6 +211,10 @@ export function InterfacesPage() {
         <div className="p-4 border-b border-border flex items-center justify-between">
           <h2 className="text-lg font-semibold">接口定义</h2>
           <div className="flex gap-2">
+            <Button size="sm" variant="ghost" onClick={() => setCurlDialogOpen(true)}>
+              <Terminal className="h-4 w-4 mr-1" />
+              导入 cURL
+            </Button>
             <Button size="sm" variant="ghost" onClick={() => setNewFolderDialogOpen(true)}>
               <Folder className="h-4 w-4 mr-1" />
               新建目录
@@ -281,6 +287,19 @@ export function InterfacesPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* cURL 导入对话框 */}
+      {projectId && (
+        <CurlImportDialog
+          open={curlDialogOpen}
+          onClose={() => setCurlDialogOpen(false)}
+          projectId={projectId}
+          folderId={selectedNode?.type === 'folder' ? selectedNode.id : null}
+          onImportSuccess={() => {
+            fetchTreeData()
+          }}
+        />
+      )}
     </div>
   )
 }

@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import Boolean, DateTime, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
 from app.models.base import TimestampMixin
@@ -31,9 +31,6 @@ class User(Base, TimestampMixin):
         nullable=False, default=0
     )
     locked_until: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
-
-    # Relationships
-    test_plans = relationship("TestPlan", back_populates="creator")
 
     def __repr__(self) -> str:
         return f"<User(id={self.id}, email={self.email}, nickname={self.nickname})>"

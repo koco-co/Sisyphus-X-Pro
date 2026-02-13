@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Github, Chrome } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/hooks/use-toast'
+import { authService } from '@/lib/auth'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
@@ -15,10 +16,11 @@ export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    name: '',
+    nickname: '',
     confirmPassword: '',
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [loading, setLoading] = useState(false)
   const { login, register } = useAuth()
   const { toast } = useToast()
   const navigate = useNavigate()
@@ -41,8 +43,8 @@ export default function LoginPage() {
     }
 
     if (activeTab === 'register') {
-      if (!formData.name) {
-        newErrors.name = '请输入姓名'
+      if (!formData.nickname) {
+        newErrors.nickname = '请输入昵称'
       }
       if (formData.password !== formData.confirmPassword) {
         newErrors.confirmPassword = '两次密码不一致'
@@ -58,32 +60,36 @@ export default function LoginPage() {
 
     if (!validateForm()) return
 
+    setLoading(true)
     try {
       if (activeTab === 'login') {
         await login(formData.email, formData.password)
         toast('登录成功', 'success')
         navigate('/')
       } else {
-        await register(formData.email, formData.password, formData.name)
+        await register(formData.email, formData.password, formData.nickname)
         toast('注册成功', 'success')
         navigate('/')
       }
     } catch (error) {
-      toast(activeTab === 'login' ? '登录失败' : '注册失败', 'error')
+      const errorMessage = error instanceof Error ? error.message : (activeTab === 'login' ? '登录失败' : '注册失败')
+      toast(errorMessage, 'error')
+    } finally {
+      setLoading(false)
     }
   }
 
   const handleSocialLogin = async (provider: 'github' | 'google') => {
     try {
-      // 获取 OAuth 授权 URL
-      const response = await fetch(`http://localhost:8000/api/v1/auth/oauth/${provider}/authorize`)
-      if (!response.ok) throw new Error('获取授权链接失败')
+      const authUrl = provider === 'github'
+        ? await authService.getGitHubAuthUrl()
+        : await authService.getGoogleAuthUrl()
 
-      const data = await response.json()
       // 跳转到 OAuth 提供商的授权页面
-      window.location.href = data.authorization_url
+      window.location.href = authUrl
     } catch (error) {
-      toast('获取授权链接失败', 'error')
+      const errorMessage = error instanceof Error ? error.message : '获取授权链接失败'
+      toast(errorMessage, 'error')
     }
   }
 
@@ -163,15 +169,15 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {activeTab === 'register' && (
               <div className="space-y-2">
-                <Label htmlFor="name">姓名</Label>
+                <Label htmlFor="nickname">昵称</Label>
                 <Input
-                  id="name"
+                  id="nickname"
                   type="text"
-                  placeholder="请输入姓名"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="请输入昵称"
+                  value={formData.nickname}
+                  onChange={(e) => setFormData({ ...formData, nickname: e.target.value })}
                 />
-                {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+                {errors.nickname && <p className="text-sm text-destructive">{errors.nickname}</p>}
               </div>
             )}
 
@@ -215,8 +221,8 @@ export default function LoginPage() {
               </div>
             )}
 
-            <Button type="submit" className="w-full" size="lg">
-              {activeTab === 'login' ? '登录' : '注册'}
+            <Button type="submit" className="w-full" size="lg" disabled={loading}>
+              {loading ? '处理中...' : (activeTab === 'login' ? '登录' : '注册')}
             </Button>
           </form>
 

@@ -62,15 +62,17 @@ async def list_db_configs(
     """List database configs for a project.
 
     Args:
-        project_id: Project ID
+        project_id: Project ID (used for routing, accessed via service)
         page: Page number (1-indexed)
         pageSize: Number of items per page
-        current_user: Current authenticated user
+        current_user: Current authenticated user (enforces authentication)
         service: Database config service
 
     Returns:
         Paginated list of database configs
     """
+    # Mark parameters as intentionally used for routing and authentication
+    _ = (project_id, current_user)
     skip = (page - 1) * pageSize
     configs, total = await service.list_db_configs(project_id, skip=skip, limit=pageSize)
 
@@ -108,9 +110,9 @@ async def create_db_config(
     """Create new database config.
 
     Args:
-        project_id: Project ID
+        project_id: Project ID (used for routing, accessed via service)
         config_in: Config creation data
-        current_user: Current authenticated user
+        current_user: Current authenticated user (enforces authentication)
         service: Database config service
 
     Returns:
@@ -119,6 +121,8 @@ async def create_db_config(
     Raises:
         HTTPException: If validation fails
     """
+    # Mark parameters as intentionally used for routing and authentication
+    _ = current_user
     try:
         config = await service.create_db_config(project_id, config_in)
         return DatabaseConfigResponse(
@@ -258,14 +262,16 @@ async def delete_db_config(
     """Delete database config.
 
     Args:
-        project_id: Project ID
+        project_id: Project ID (used for routing and ownership validation)
         config_id: Config ID
-        current_user: Current authenticated user
+        current_user: Current authenticated user (enforces authentication)
         service: Database config service
 
     Raises:
         HTTPException: If config not found
     """
+    # Mark parameters as intentionally used for routing and authentication
+    _ = current_user
     config = await service.get_db_config_by_id(config_id)
     if not config or config.project_id != project_id:
         raise HTTPException(
@@ -291,14 +297,16 @@ async def test_connection(
     """Test database connection.
 
     Args:
-        project_id: Project ID
+        project_id: Project ID (used for routing)
         test_request: Connection test parameters
-        current_user: Current authenticated user
+        current_user: Current authenticated user (enforces authentication)
         service: Database config service
 
     Returns:
         Connection test result
     """
+    # Mark parameters as intentionally used for routing and authentication
+    _ = (project_id, current_user)
     connected, message = await service.test_connection(
         db_type=test_request.db_type,
         host=test_request.host,
@@ -315,7 +323,7 @@ async def test_connection(
 async def toggle_db_config(
     project_id: int,
     config_id: int,
-    is_enabled: bool,
+    request_data: dict,
     current_user: User = Depends(get_current_user),
     service: DatabaseConfigService = Depends(get_db_config_service),
 ):
@@ -324,7 +332,7 @@ async def toggle_db_config(
     Args:
         project_id: Project ID
         config_id: Config ID
-        is_enabled: New enabled status
+        request_data: Request body containing is_enabled
         current_user: Current authenticated user
         service: Database config service
 
@@ -334,6 +342,7 @@ async def toggle_db_config(
     Raises:
         HTTPException: If config not found
     """
+    is_enabled = request_data.get("is_enabled", True)
     config = await service.toggle_enabled(config_id, is_enabled)
     if not config or config.project_id != project_id:
         raise HTTPException(

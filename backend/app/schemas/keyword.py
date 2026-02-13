@@ -64,3 +64,27 @@ class KeywordEnabledResponse(BaseModel):
     """Enabled keywords grouped by type."""
 
     keywords: Dict[str, List[KeywordResponse]]
+
+
+class DocstringParseRequest(BaseModel):
+    """Request for parsing Python code docstring."""
+
+    code: str = Field(..., min_length=1, description="Python 代码")
+
+
+class DocstringParam(BaseModel):
+    """Parameter extracted from docstring."""
+
+    name: str
+    type: Optional[str] = None
+    description: str = ""
+    default: Optional[str] = None
+
+
+class DocstringParseResponse(BaseModel):
+    """Response from docstring parsing."""
+
+    function_name: Optional[str] = None
+    params: List[DocstringParam] = []
+    description: str = ""
+    error: Optional[str] = None

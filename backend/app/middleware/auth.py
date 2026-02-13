@@ -20,6 +20,11 @@ oauth2_scheme = OAuth2PasswordBearer(
     auto_error=False,  # Allow optional token for dev mode
 )
 
+oauth2_scheme_refresh = OAuth2PasswordBearer(
+    tokenUrl=f"{settings.API_V1_STR}/auth/refresh",
+    auto_error=False,
+)
+
 
 def create_access_token(data: dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
     """Create a JWT access token.
@@ -38,7 +43,23 @@ def create_access_token(data: dict[str, Any], expires_delta: Optional[timedelta]
         expire = datetime.now(timezone.utc) + timedelta(
             minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
         )
-    to_encode.update({"exp": expire})
+    to_encode.update({"exp": expire, "type": "access"})
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return encoded_jwt
+
+
+def create_refresh_token(data: dict[str, Any]) -> str:
+    """Create a JWT refresh token.
+
+    Args:
+        data: Data to encode in the token (e.g., {"sub": user_id})
+
+    Returns:
+        Encoded JWT refresh token
+    """
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+    to_encode.update({"exp": expire, "type": "refresh"})
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
@@ -198,7 +219,27 @@ async def authenticate_user(email: str, password: str, db: AsyncSession) -> Opti
         # User registered via OAuth, no password set
         return None
 
-    if not verify_password(password, user.password_hash):
+    # Check if account is locked
+    if user.locked_until and user.locked_until > datetime.now(timezone.utc):
+        # Account is still locked
         return None
+
+    # Verify password
+    if not verify_password(password, user.password_hash):
+        # Increment failed login count
+        user.failed_login_count = (user.failed_login_count or 0) + 1
+
+        # Lock account after 5 failed attempts
+        if user.failed_login_count >= 5:
+            user.locked_until = datetime.now(timezone.utc) + timedelta(minutes=15)
+
+        await db.commit()
+        return None
+
+    # Successful login - reset failed login count and lock
+    user.failed_login_count = 0
+    user.locked_until = None
+    user.last_login_at = datetime.now(timezone.utc)
+    await db.commit()
 
     return user

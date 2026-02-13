@@ -9,12 +9,15 @@ from app.database import get_db
 from app.middleware.auth import get_current_user
 from app.models.user import User
 from app.schemas.keyword import (
+    DocstringParseRequest,
+    DocstringParseResponse,
     KeywordCreate,
     KeywordEnabledResponse,
     KeywordListResponse,
     KeywordResponse,
     KeywordUpdate,
 )
+from app.utils.docstring_parser import parse_docstring
 from app.services.keyword_service import KeywordService
 
 router = APIRouter(prefix="/keywords", tags=["Keywords"])
@@ -121,6 +124,51 @@ async def get_enabled_keywords(
         ]
 
     return KeywordEnabledResponse(keywords=keywords_by_type)
+
+
+@router.post("/parse", response_model=DocstringParseResponse)
+async def parse_code_docstring(
+    request: DocstringParseRequest,
+    current_user: User = Depends(get_current_user),
+):
+    """Parse Python code docstring to extract function info.
+
+    Args:
+        request: Code to parse
+        current_user: Current authenticated user
+
+    Returns:
+        Parsed function info including parameters
+
+    Raises:
+        HTTPException: If parsing fails
+    """
+    result = parse_docstring(request.code)
+
+    if result.get("error") and not result.get("function_name"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=result["error"],
+        )
+
+    # Convert params to response format
+    params = []
+    for param in result.get("params", []):
+        params.append(
+            {
+                "name": param["name"],
+                "type": param.get("type"),
+                "description": param.get("description", ""),
+                "default": param.get("default"),
+            }
+        )
+
+    return DocstringParseResponse(
+        function_name=result.get("function_name"),
+        description=result.get("description", ""),
+        params=params,
+        error=result.get("error"),
+    )
 
 
 @router.post("", response_model=KeywordResponse, status_code=status.HTTP_201_CREATED)

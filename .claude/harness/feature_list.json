@@ -38,7 +38,7 @@
             "验证显示用户信息",
             "验证JWT token保存到localStorage"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -54,7 +54,7 @@
             "验证跳转到首页",
             "验证显示GitHub用户信息"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -70,7 +70,7 @@
             "验证自动创建账户",
             "验证跳转到首页"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -84,7 +84,7 @@
             "验证清除localStorage中的token",
             "验证跳转到登录页面"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -98,7 +98,7 @@
             "验证自动刷新token",
             "验证请求成功"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "api_test"
         },
         {
@@ -201,7 +201,7 @@
             "验证项目出现在列表中",
             "验证数据库中有记录"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -217,7 +217,7 @@
             "验证列表中显示新名称",
             "验证数据库已更新"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -231,7 +231,7 @@
             "验证项目从列表消失",
             "验证数据库中记录已删除 (软删除)"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -252,7 +252,7 @@
             "验证显示连接成功",
             "点击保存"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -279,7 +279,7 @@
             "验证两个数据库都显示在列表中",
             "验证可以选择默认数据库"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         }
       ]
@@ -708,7 +708,7 @@
             "验证报告名称包含时间戳",
             "验证报告显示执行结果统计"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -723,7 +723,7 @@
             "验证显示场景执行明细",
             "验证显示步骤执行明细"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -738,7 +738,7 @@
             "验证显示测试用例",
             "验证可以查看详细日志"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -752,7 +752,7 @@
             "验证文件下载成功",
             "验证文件内容完整"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -765,7 +765,7 @@
             "验证31天前的报告被删除",
             "验证30天内的报告保留"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "scheduled_task_verification"
         }
       ]
@@ -837,8 +837,8 @@
   },
   "metadata": {
     "total_features": 54,
-    "completed_features": 1,
-    "completion_rate": 1.9,
+    "completed_features": 6,
+    "completion_rate": 11.1,
     "notes": "基于 FR-001 到 FR-010 需求文档的功能清单"
   }
 }

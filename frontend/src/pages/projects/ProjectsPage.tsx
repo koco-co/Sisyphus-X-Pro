@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Plus, Pencil, Trash2, Database, Search } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/hooks/use-toast'
+import { apiClient, type PaginatedResponse } from '@/lib/api'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
@@ -10,10 +11,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/Table'
 
 interface Project {
-  id: string
+  id: number
   name: string
   description: string
-  creator: string
+  creator_name: string
   created_at: string
   updated_at: string
 }
@@ -49,25 +50,16 @@ export default function ProjectsPage() {
     setLoading(true)
     try {
       const params = new URLSearchParams({
-        skip: ((page - 1) * limit).toString(),
-        limit: limit.toString(),
-        ...(searchQuery && { search: searchQuery }),
+        page: page.toString(),
+        pageSize: limit.toString(),
+        ...(searchQuery && { name: searchQuery }),
       })
 
-      const response = await fetch(`http://localhost:8000/api/v1/projects?${params}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) throw new Error('获取项目列表失败')
-
-      const data = await response.json()
-      setProjects(data)
-      // 后端可能不返回 total,使用数组长度判断
-      setTotal(data.length || 0)
+      const data: PaginatedResponse<Project> = await apiClient.get(`/projects?${params}`)
+      setProjects(data.items)
+      setTotal(data.total)
     } catch (error) {
-      toast('获取项目列表失败', 'error')
+      toast(error instanceof Error ? error.message : '获取项目列表失败', 'error')
     } finally {
       setLoading(false)
     }
@@ -109,25 +101,14 @@ export default function ProjectsPage() {
   // 提交表单
   const handleSubmit = async () => {
     try {
-      const url = editingProject
-        ? `http://localhost:8000/api/v1/projects/${editingProject.id}`
-        : 'http://localhost:8000/api/v1/projects'
-
-      const response = await fetch(url, {
-        method: editingProject ? 'PUT' : 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      })
-
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({ detail: '操作失败' }))
-        throw new Error(error.detail || (editingProject ? '编辑失败' : '创建失败'))
+      if (editingProject) {
+        await apiClient.put(`/projects/${editingProject.id}`, formData)
+        toast('编辑成功', 'success')
+      } else {
+        await apiClient.post('/projects', formData)
+        toast('添加成功', 'success')
       }
 
-      toast(editingProject ? '编辑成功' : '添加成功', 'success')
       setDialogOpen(false)
       fetchProjects()
     } catch (error) {
@@ -140,18 +121,7 @@ export default function ProjectsPage() {
     if (!deletingProject) return
 
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/projects/${deletingProject.id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({ detail: '删除失败' }))
-        throw new Error(error.detail || '删除失败')
-      }
-
+      await apiClient.delete(`/projects/${deletingProject.id}`)
       toast('删除成功', 'success')
       setDeleteDialogOpen(false)
       fetchProjects()
@@ -161,7 +131,7 @@ export default function ProjectsPage() {
   }
 
   // 跳转到数据库配置页面
-  const handleDatabaseConfig = (projectId: string) => {
+  const handleDatabaseConfig = (projectId: number) => {
     navigate(`/projects/${projectId}/database-config`)
   }
 
@@ -189,7 +159,7 @@ export default function ProjectsPage() {
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="搜索项目名称或描述..."
+              placeholder="搜索项目名称..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -232,7 +202,7 @@ export default function ProjectsPage() {
                   <TableRow key={project.id}>
                     <TableCell className="font-medium">{project.name}</TableCell>
                     <TableCell className="text-muted-foreground">{project.description || '-'}</TableCell>
-                    <TableCell>{project.creator}</TableCell>
+                    <TableCell>{project.creator_name}</TableCell>
                     <TableCell>
                       {new Date(project.created_at).toLocaleDateString('zh-CN')}
                     </TableCell>

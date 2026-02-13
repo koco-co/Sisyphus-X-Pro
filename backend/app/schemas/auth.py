@@ -34,6 +34,7 @@ class UserResponse(UserBase):
     provider: str = "email"
     is_active: bool = True
     created_at: datetime
+    locked_until: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -42,6 +43,7 @@ class Token(BaseModel):
     """JWT token response schema."""
 
     access_token: str
+    refresh_token: Optional[str] = None
     token_type: str = "bearer"
     user: UserResponse
 

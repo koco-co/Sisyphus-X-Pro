@@ -4,7 +4,7 @@ from datetime import timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -13,7 +13,15 @@ from app.database import get_db
 from app.middleware.auth import (
     authenticate_user,
     create_access_token,
+    create_refresh_token,
+    decode_token,
     get_current_user,
+)
+
+# OAuth2 scheme for refresh token
+oauth2_scheme_refresh = OAuth2PasswordBearer(
+    tokenUrl=f"{settings.API_V1_STR}/auth/refresh",
+    auto_error=False,
 )
 from app.models.user import User
 from app.schemas.auth import Token, UserCreate, UserLogin, UserResponse
@@ -67,8 +75,13 @@ async def register(
         data={"sub": str(user.id), "email": user.email},
         expires_delta=access_token_expires,
     )
+    refresh_token = create_refresh_token(data={"sub": str(user.id), "email": user.email})
 
-    return Token(access_token=access_token, user=UserResponse.model_validate(user))
+    return Token(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        user=UserResponse.model_validate(user),
+    )
 
 
 @router.post("/login", response_model=Token)
@@ -106,8 +119,13 @@ async def login(
         data={"sub": str(user.id), "email": user.email},
         expires_delta=access_token_expires,
     )
+    refresh_token = create_refresh_token(data={"sub": str(user.id), "email": user.email})
 
-    return Token(access_token=access_token, user=UserResponse.model_validate(user))
+    return Token(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        user=UserResponse.model_validate(user),
+    )
 
 
 @router.post("/login/json", response_model=Token)
@@ -145,8 +163,13 @@ async def login_json(
         data={"sub": str(user.id), "email": user.email},
         expires_delta=access_token_expires,
     )
+    refresh_token = create_refresh_token(data={"sub": str(user.id), "email": user.email})
 
-    return Token(access_token=access_token, user=UserResponse.model_validate(user))
+    return Token(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        user=UserResponse.model_validate(user),
+    )
 
 
 @router.get("/me", response_model=UserResponse)
@@ -176,6 +199,77 @@ async def logout():
         Success message
     """
     return {"message": "Successfully logged out"}
+
+
+@router.post("/refresh", response_model=Token)
+async def refresh_token(
+    refresh_token: str = Depends(oauth2_scheme_refresh),
+    db: AsyncSession = Depends(get_db),
+):
+    """Refresh access token using refresh token.
+
+    Args:
+        refresh_token: Valid refresh token
+        db: Database session
+
+    Returns:
+        New access token and refresh token
+
+    Raises:
+        HTTPException: If refresh token is invalid or expired
+    """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid refresh token",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    if not refresh_token:
+        raise credentials_exception
+
+    # Decode refresh token
+    payload = decode_token(refresh_token)
+    if payload is None:
+        raise credentials_exception
+
+    # Verify token type is refresh
+    token_type = payload.get("type")
+    if token_type != "refresh":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token type",
+        )
+
+    # Extract user ID
+    user_id = payload.get("sub")
+    if user_id is None:
+        raise credentials_exception
+
+    # Query user from database
+    result = await db.execute(select(User).where(User.id == int(user_id)))
+    user = result.scalar_one_or_none()
+
+    if user is None:
+        raise credentials_exception
+
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="User account is disabled"
+        )
+
+    # Generate new tokens
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": str(user.id), "email": user.email},
+        expires_delta=access_token_expires,
+    )
+    new_refresh_token = create_refresh_token(data={"sub": str(user.id), "email": user.email})
+
+    return Token(
+        access_token=access_token,
+        refresh_token=new_refresh_token,
+        user=UserResponse.model_validate(user),
+    )
 
 
 # OAuth endpoints
@@ -220,7 +314,7 @@ async def github_callback(
 
     Args:
         code: Authorization code from GitHub
-        state: State parameter for CSRF protection
+        state: State parameter for CSRF protection (currently unused, for future validation)
         db: Database session
 
     Returns:
@@ -232,6 +326,10 @@ async def github_callback(
     try:
         oauth_service = get_github_oauth_service()
         redirect_uri = f"{settings.OAUTH_REDIRECT_URL}/github/callback"
+
+        # TODO: Validate state parameter for CSRF protection
+        # Currently stored but not validated
+        _ = state  # Mark as intentionally unused for now
 
         # Exchange code for access token
         access_token = await oauth_service.get_access_token(code, redirect_uri)
@@ -248,8 +346,13 @@ async def github_callback(
             data={"sub": str(user.id), "email": user.email},
             expires_delta=access_token_expires,
         )
+        jwt_refresh_token = create_refresh_token(data={"sub": str(user.id), "email": user.email})
 
-        return Token(access_token=jwt_token, user=UserResponse.model_validate(user))
+        return Token(
+            access_token=jwt_token,
+            refresh_token=jwt_refresh_token,
+            user=UserResponse.model_validate(user),
+        )
 
     except ValueError as e:
         raise HTTPException(
@@ -300,7 +403,7 @@ async def google_callback(
 
     Args:
         code: Authorization code from Google
-        state: State parameter for CSRF protection
+        state: State parameter for CSRF protection (currently unused, for future validation)
         db: Database session
 
     Returns:
@@ -312,6 +415,10 @@ async def google_callback(
     try:
         oauth_service = get_google_oauth_service()
         redirect_uri = f"{settings.OAUTH_REDIRECT_URL}/google/callback"
+
+        # TODO: Validate state parameter for CSRF protection
+        # Currently stored but not validated
+        _ = state  # Mark as intentionally unused for now
 
         # Exchange code for access token
         access_token = await oauth_service.get_access_token(code, redirect_uri)
@@ -328,8 +435,13 @@ async def google_callback(
             data={"sub": str(user.id), "email": user.email},
             expires_delta=access_token_expires,
         )
+        jwt_refresh_token = create_refresh_token(data={"sub": str(user.id), "email": user.email})
 
-        return Token(access_token=jwt_token, user=UserResponse.model_validate(user))
+        return Token(
+            access_token=jwt_token,
+            refresh_token=jwt_refresh_token,
+            user=UserResponse.model_validate(user),
+        )
 
     except ValueError as e:
         raise HTTPException(

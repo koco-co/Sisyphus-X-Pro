@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Plus, Pencil, Trash2, Check, Loader2 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/hooks/use-toast'
+import { apiClient, type PaginatedResponse } from '@/lib/api'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
@@ -13,23 +14,24 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/Badge'
 
 interface DatabaseConfig {
-  id: string
-  project_id: string
+  id: number
+  project_id: number
   name: string
-  variable: string
+  variable_name: string
   db_type: 'mysql' | 'postgresql'
   host: string
   port: number
   database: string
   username: string
-  enabled: boolean
-  connection_status: 'connected' | 'failed' | 'testing'
+  config_display: string
+  is_connected: boolean
+  is_enabled: boolean
   created_at: string
-  updated_at: string
+  last_check_at: string | null
 }
 
 interface ProjectInfo {
-  id: string
+  id: number
   name: string
 }
 
@@ -54,7 +56,7 @@ export default function DatabaseConfigPage() {
   // 表单数据
   const [formData, setFormData] = useState({
     name: '',
-    variable: '',
+    variable_name: '',
     db_type: 'mysql' as 'mysql' | 'postgresql',
     host: '',
     port: 3306,
@@ -65,32 +67,24 @@ export default function DatabaseConfigPage() {
 
   // 获取数据库配置列表
   const fetchConfigs = async () => {
+    if (!projectId) return
+
     setLoading(true)
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/db-configs?project_id=${projectId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) throw new Error('获取数据库配置失败')
-
-      const data = await response.json()
-      setConfigs(data.data)
+      const data: PaginatedResponse<DatabaseConfig> = await apiClient.get(
+        `/projects/${projectId}/db-configs?page=1&pageSize=100`
+      )
+      setConfigs(data.items)
 
       // 获取项目信息
-      const projectRes = await fetch(`http://localhost:8000/api/v1/projects/${projectId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (projectRes.ok) {
-        const projectData = await projectRes.json()
-        setProjectInfo(projectData)
+      try {
+        const project = await apiClient.get<ProjectInfo>(`/projects/${projectId}`)
+        setProjectInfo(project)
+      } catch (error) {
+        console.error('Failed to fetch project info:', error)
       }
     } catch (error) {
-      toast('获取数据库配置失败', 'error')
+      toast(error instanceof Error ? error.message : '获取数据库配置失败', 'error')
     } finally {
       setLoading(false)
     }
@@ -98,13 +92,6 @@ export default function DatabaseConfigPage() {
 
   useEffect(() => {
     fetchConfigs()
-
-    // 设置定时刷新连接状态 (每10分钟)
-    const interval = setInterval(() => {
-      fetchConfigs()
-    }, 10 * 60 * 1000)
-
-    return () => clearInterval(interval)
   }, [projectId])
 
   // 打开新增弹窗
@@ -112,7 +99,7 @@ export default function DatabaseConfigPage() {
     setEditingConfig(null)
     setFormData({
       name: '',
-      variable: '',
+      variable_name: '',
       db_type: 'mysql',
       host: '',
       port: 3306,
@@ -129,7 +116,7 @@ export default function DatabaseConfigPage() {
     setEditingConfig(config)
     setFormData({
       name: config.name,
-      variable: config.variable,
+      variable_name: config.variable_name,
       db_type: config.db_type,
       host: config.host,
       port: config.port,
@@ -151,27 +138,20 @@ export default function DatabaseConfigPage() {
   const handleTestConnection = async () => {
     setTesting(true)
     try {
-      const response = await fetch('http://localhost:8000/api/v1/db-configs/test', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      })
+      const result = await apiClient.post<{ connected: boolean; message: string }>(
+        `/projects/${projectId}/db-configs/test-connection`,
+        formData
+      )
 
-      if (!response.ok) throw new Error('连接测试失败')
-
-      const data = await response.json()
-      if (data.data.success) {
+      if (result.connected) {
         toast('连接测试成功', 'success')
         setTestPassed(true)
       } else {
-        toast(`连接测试失败: ${data.data.message}`, 'error')
+        toast(`连接测试失败: ${result.message}`, 'error')
         setTestPassed(false)
       }
     } catch (error) {
-      toast('连接测试失败', 'error')
+      toast(error instanceof Error ? error.message : '连接测试失败', 'error')
       setTestPassed(false)
     } finally {
       setTesting(false)
@@ -180,90 +160,69 @@ export default function DatabaseConfigPage() {
 
   // 提交表单
   const handleSubmit = async () => {
+    if (!projectId) return
+
     if (!testPassed && !editingConfig) {
       toast('请先测试连接', 'error')
       return
     }
 
     try {
-      const url = editingConfig
-        ? `http://localhost:8000/api/v1/db-configs/${editingConfig.id}`
-        : 'http://localhost:8000/api/v1/db-configs'
-
       const payload = editingConfig
-        ? { ...formData, project_id: projectId }
-        : { ...formData, project_id: projectId }
+        ? formData
+        : { ...formData, project_id: parseInt(projectId) }
 
-      const response = await fetch(url, {
-        method: editingConfig ? 'PUT' : 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      })
+      if (editingConfig) {
+        await apiClient.put(`/projects/${projectId}/db-configs/${editingConfig.id}`, payload)
+        toast('编辑成功', 'success')
+      } else {
+        await apiClient.post(`/projects/${projectId}/db-configs`, payload)
+        toast('添加成功', 'success')
+      }
 
-      if (!response.ok) throw new Error(editingConfig ? '编辑失败' : '创建失败')
-
-      toast(editingConfig ? '编辑成功' : '添加成功', 'success')
       setDialogOpen(false)
       fetchConfigs()
     } catch (error) {
-      toast(editingConfig ? '编辑失败' : '添加失败', 'error')
+      toast(error instanceof Error ? error.message : (editingConfig ? '编辑失败' : '添加失败'), 'error')
     }
   }
 
   // 切换启用状态
   const handleToggleEnabled = async (config: DatabaseConfig) => {
+    if (!projectId) return
+
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/db-configs/${config.id}/toggle`, {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) throw new Error('切换状态失败')
-
+      await apiClient.patch<DatabaseConfig>(
+        `/projects/${projectId}/db-configs/${config.id}/toggle`,
+        { is_enabled: !config.is_enabled }
+      )
       toast('切换状态成功', 'success')
       fetchConfigs()
     } catch (error) {
-      toast('切换状态失败', 'error')
+      toast(error instanceof Error ? error.message : '切换状态失败', 'error')
     }
   }
 
   // 删除配置
   const handleDelete = async () => {
-    if (!deletingConfig) return
+    if (!deletingConfig || !projectId) return
 
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/db-configs/${deletingConfig.id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) throw new Error('删除失败')
-
+      await apiClient.delete(`/projects/${projectId}/db-configs/${deletingConfig.id}`)
       toast('删除成功', 'success')
       setDeleteDialogOpen(false)
       fetchConfigs()
     } catch (error) {
-      toast('删除失败', 'error')
+      toast(error instanceof Error ? error.message : '删除失败', 'error')
     }
   }
 
   // 获取连接状态徽章
-  const getConnectionStatusBadge = (status: DatabaseConfig['connection_status']) => {
-    const statusMap = {
-      connected: { label: '已连接', className: 'bg-green-500 text-white' },
-      failed: { label: '连接失败', className: 'bg-destructive text-destructive-foreground' },
-      testing: { label: '测试中', className: 'bg-yellow-500 text-white' },
+  const getConnectionStatusBadge = (connected: boolean) => {
+    if (connected) {
+      return <Badge className="bg-green-500 text-white">已连接</Badge>
     }
-
-    const { label, className } = statusMap[status]
-    return <Badge className={className}>{label}</Badge>
+    return <Badge className="bg-destructive text-destructive-foreground">连接失败</Badge>
   }
 
   return (
@@ -328,17 +287,15 @@ export default function DatabaseConfigPage() {
                     <TableCell className="font-medium">{config.name}</TableCell>
                     <TableCell>
                       <code className="text-sm bg-muted px-2 py-1 rounded">
-                        {'{{'}{config.variable}{'}}'}
+                        {'{{'}{config.variable_name}{'}}'}
                       </code>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {config.host}:{config.port}/{config.database}
-                    </TableCell>
-                    <TableCell>{getConnectionStatusBadge(config.connection_status)}</TableCell>
+                    <TableCell className="text-muted-foreground">{config.config_display}</TableCell>
+                    <TableCell>{getConnectionStatusBadge(config.is_connected)}</TableCell>
                     <TableCell>
                       <Switch
-                        checked={config.enabled}
-                        onClick={() => handleToggleEnabled(config)}
+                        checked={config.is_enabled}
+                        onCheckedChange={() => handleToggleEnabled(config)}
                       />
                     </TableCell>
                     <TableCell className="text-right">
@@ -371,11 +328,11 @@ export default function DatabaseConfigPage() {
 
       {/* 新增/编辑弹窗 */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent onClose={() => setDialogOpen(false)} className="max-w-2xl">
+        <DialogContent onClose={() => setDialogOpen(false)} className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle>{editingConfig ? '编辑数据库配置' : '新增数据库配置'}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
+          <div className="space-y-4 py-4 overflow-y-auto flex-1">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">连接名称 *</Label>
@@ -387,11 +344,11 @@ export default function DatabaseConfigPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="variable">引用变量 *</Label>
+                <Label htmlFor="variable_name">引用变量 *</Label>
                 <Input
-                  id="variable"
-                  value={formData.variable}
-                  onChange={(e) => setFormData({ ...formData, variable: e.target.value })}
+                  id="variable_name"
+                  value={formData.variable_name}
+                  onChange={(e) => setFormData({ ...formData, variable_name: e.target.value })}
                   placeholder="例如: prod_db"
                 />
                 <p className="text-xs text-muted-foreground">在 YAML 中通过 {'{{'}变量名{'}}'} 引用</p>
@@ -403,7 +360,9 @@ export default function DatabaseConfigPage() {
               <Select
                 id="db_type"
                 value={formData.db_type}
-                onChange={(e) => setFormData({ ...formData, db_type: e.target.value as 'mysql' | 'postgresql' })}
+                onChange={(e) =>
+                  setFormData({ ...formData, db_type: e.target.value as 'mysql' | 'postgresql' })
+                }
               >
                 <option value="mysql">MySQL</option>
                 <option value="postgresql">PostgreSQL</option>
@@ -511,7 +470,8 @@ export default function DatabaseConfigPage() {
           </DialogHeader>
           <div className="py-4">
             <p className="text-muted-foreground">
-              确定要删除数据库配置 <span className="font-semibold text-foreground">{deletingConfig?.name}</span> 吗?
+              确定要删除数据库配置 <span className="font-semibold text-foreground">{deletingConfig?.name}</span>
+              吗?
               <br />
               此操作不可撤销。
             </p>
