@@ -10,24 +10,32 @@ import { InterfacesPage } from '@/pages/projects/InterfacesPage'
 import Header from '@/components/layout/Header'
 import ScenariosPage from '@/pages/scenarios/ScenariosPage'
 import TestPlansPage from '@/pages/test-plans/TestPlansPage'
+import GlobalFunctions from '@/pages/GlobalFunctions'
 import { apiClient } from '@/lib/api'
-import { useEffect } from 'react'
+import { useEffect, useCallback } from 'react'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, refreshAccessToken } = useAuth()
+  const { isAuthenticated, loading, refreshAccessToken } = useAuth()
 
-  // 设置 Token 刷新回调
-  useEffect(() => {
-    apiClient.setTokenRefreshCallback(async () => {
-      try {
-        await refreshAccessToken()
-      } catch (error) {
-        // Token 刷新失败,跳转登录页
-        console.error('Token refresh failed:', error)
-        window.location.href = '/login'
-      }
-    })
+  // 设置 Token 刷新回调 - 使用 useCallback 避免重复创建
+  const setupTokenRefresh = useCallback(async () => {
+    try {
+      await refreshAccessToken()
+    } catch (error) {
+      // Token 刷新失败,跳转登录页
+      console.error('Token refresh failed:', error)
+      window.location.href = '/login'
+    }
   }, [refreshAccessToken])
+
+  useEffect(() => {
+    apiClient.setTokenRefreshCallback(setupTokenRefresh)
+  }, [setupTokenRefresh])
+
+  // 等待初始化完成
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">加载中...</div>
+  }
 
   return isAuthenticated ? (
     <div className="min-h-screen bg-background">
@@ -38,13 +46,21 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, loading } = useAuth()
+
+  // 等待初始化完成
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">加载中...</div>
+  }
+
+  // 已登录用户访问公开路由时重定向到首页
   return isAuthenticated ? <Navigate to="/" replace /> : <>{children}</>
 }
 
 function AppRoutes() {
   return (
     <Routes>
+      {/* 公开路由 - 登录页 */}
       <Route
         path="/login"
         element={
@@ -53,9 +69,12 @@ function AppRoutes() {
           </PublicRoute>
         }
       />
-      {/* OAuth 回调路由 (公开) */}
+
+      {/* 公开路由 - OAuth 回调 (不需要包装在 PublicRoute 中,因为需要处理回调) */}
       <Route path="/auth/github/callback" element={<OAuthCallback />} />
       <Route path="/auth/google/callback" element={<OAuthCallback />} />
+
+      {/* 受保护路由 - 首页 */}
       <Route
         path="/"
         element={
@@ -64,14 +83,14 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
+      {/* 受保护路由 - 仪表盘 (重定向到首页) */}
       <Route
         path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
+        element={<Navigate to="/" replace />}
       />
+
+      {/* 受保护路由 - 项目管理 */}
       <Route
         path="/projects"
         element={
@@ -80,6 +99,8 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
+      {/* 受保护路由 - 项目配置 */}
       <Route
         path="/projects/:projectId/database-config"
         element={
@@ -104,6 +125,8 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
+      {/* 受保护路由 - 场景编排 */}
       <Route
         path="/scenarios"
         element={
@@ -112,6 +135,8 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
+      {/* 受保护路由 - 测试计划 */}
       <Route
         path="/test-plans"
         element={
@@ -119,6 +144,46 @@ function AppRoutes() {
             <TestPlansPage />
           </ProtectedRoute>
         }
+      />
+      <Route
+        path="/test-plans/new"
+        element={
+          <ProtectedRoute>
+            <TestPlansPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/test-plans/:id/edit"
+        element={
+          <ProtectedRoute>
+            <TestPlansPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/test-plans/:id/executions"
+        element={
+          <ProtectedRoute>
+            <TestPlansPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 受保护路由 - 全局函数 */}
+      <Route
+        path="/global-functions"
+        element={
+          <ProtectedRoute>
+            <GlobalFunctions />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 404 - 所有未匹配的路由重定向到首页或登录页 */}
+      <Route
+        path="*"
+        element={<Navigate to="/" replace />}
       />
     </Routes>
   )

@@ -109,6 +109,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(null)
     setRefreshToken(null)
     apiClient.setToken(null)
+
+    // 清除 localStorage
+    localStorage.removeItem('token')
+    localStorage.removeItem('refreshToken')
+    localStorage.removeItem('user')
+
     authService.logout()
   }, [])
 
