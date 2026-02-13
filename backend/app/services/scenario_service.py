@@ -131,7 +131,7 @@ class ScenarioService:
 
         # Get total count
         total_result = await self.session.execute(count_query)
-        total = total_result.scalar()
+        total = total_result.scalar() or 0
 
         # Get scenarios with step count
         query = (

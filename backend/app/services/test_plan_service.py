@@ -106,16 +106,17 @@ class TestPlanService:
         test_plan = result.scalar_one_or_none()
 
         if test_plan:
-            # Load scenarios with sort_order
+            # Load scenarios with sort_order - use a temp attribute
             scenarios_result = await self.db.execute(
                 select(PlanScenario, Scenario)
                 .join(Scenario, PlanScenario.scenario_id == Scenario.id)
                 .where(PlanScenario.plan_id == plan_id)
                 .order_by(PlanScenario.sort_order)
             )
-            test_plan.scenarios_list = [
+            # Use object.__setattr__ to add attribute dynamically
+            object.__setattr__(test_plan, 'scenarios_list', [
                 ps[0] for ps in scenarios_result.all()
-            ]
+            ])
 
         return test_plan
 
@@ -272,7 +273,7 @@ class TestPlanService:
         plan_scenarios = []
         for item in scenario_orders:
             scenario_id = item.get("scenario_id")
-            sort_order = item.get("sort_order")
+            sort_order = item.get("sort_order", 0)
 
             result = await self.db.execute(
                 select(PlanScenario).where(
@@ -283,7 +284,7 @@ class TestPlanService:
             plan_scenario = result.scalar_one_or_none()
 
             if plan_scenario:
-                plan_scenario.sort_order = sort_order
+                plan_scenario.sort_order = sort_order or 0
                 plan_scenarios.append(plan_scenario)
 
         await self.db.flush()

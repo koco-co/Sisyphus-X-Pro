@@ -236,101 +236,101 @@ export default function Scenarios() {
 
     {/* 创建场景对话框 */}
     <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-      <DialogContent>
+      <DialogContent onClose={() => setIsCreateDialogOpen(false)}>
         <DialogHeader>
           <DialogTitle>创建新场景</DialogTitle>
         </DialogHeader>
         <form onSubmit={(e) => { e.preventDefault(); handleCreateScenario(); }} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            场景名称 <span className="text-red-500">*</span>
-          </label>
-          <Input
-            type="text"
-            required
-            value={newScenario.name}
-            onChange={(e) => setNewScenario({ ...newScenario, name: e.target.value })}
-            placeholder="输入场景名称"
-            className="w-full"
-          />
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              场景名称 <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="text"
+              required
+              value={newScenario.name}
+              onChange={(e) => setNewScenario({ ...newScenario, name: e.target.value })}
+              placeholder="输入场景名称"
+              className="w-full"
+            />
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            场景描述
-          </label>
-          <textarea
-            value={newScenario.description}
-            onChange={(e) => setNewScenario({ ...newScenario, description: e.target.value })}
-            placeholder="输入场景描述（可选）"
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              场景描述
+            </label>
+            <textarea
+              value={newScenario.description}
+              onChange={(e) => setNewScenario({ ...newScenario, description: e.target.value })}
+              placeholder="输入场景描述（可选）"
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            优先级
-          </label>
-          <select
-            value={newScenario.priority}
-            onChange={(e) => setNewScenario({ ...newScenario, priority: e.target.value as Scenario['priority'] })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="P0">P0 - 最高</option>
-            <option value="P1">P1 - 高</option>
-            <option value="P2">P2 - 中</option>
-            <option value="P3">P3 - 低</option>
-          </select>
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              优先级
+            </label>
+            <select
+              value={newScenario.priority}
+              onChange={(e) => setNewScenario({ ...newScenario, priority: e.target.value as Scenario['priority'] })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="P0">P0 - 最高</option>
+              <option value="P1">P1 - 高</option>
+              <option value="P2">P2 - 中</option>
+              <option value="P3">P3 - 低</option>
+            </select>
+          </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => setIsCreateDialogOpen(false)}
-          >
-            取消
-          </Button>
-          <Button
-            type="submit"
-            disabled={!newScenario.name.trim()}
-          >
-            创建
-          </Button>
-        </div>
-      </form>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setIsCreateDialogOpen(false)}
+            >
+              取消
+            </Button>
+            <Button
+              type="submit"
+              disabled={!newScenario.name.trim()}
+            >
+              创建
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
 
     {/* 删除确认对话框 */}
     <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-      <DialogContent>
+      <DialogContent onClose={() => setIsDeleteDialogOpen(false)}>
         <DialogHeader>
           <DialogTitle>确认删除</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
-        <p className="text-gray-700">
-          确定要删除场景 <strong>{scenarioToDelete?.name}</strong> 吗？
-        </p>
-        <p className="text-sm text-gray-600">
-          此操作无法撤销，删除后需要重新创建。
-        </p>
-        <div className="flex justify-end gap-3">
-          <Button
-            variant="ghost"
-            onClick={() => setIsDeleteDialogOpen(false)}
-          >
-            取消
-          </Button>
-          <Button
-            variant="danger"
-            onClick={handleDeleteScenario}
-          >
-            确认删除
-          </Button>
+        <div className="space-y-4 py-4">
+          <p className="text-gray-700">
+            确定要删除场景 <strong>{scenarioToDelete?.name}</strong> 吗？
+          </p>
+          <p className="text-sm text-gray-600">
+            此操作无法撤销，删除后需要重新创建。
+          </p>
+          <DialogFooter>
+            <Button
+              variant="ghost"
+              onClick={() => setIsDeleteDialogOpen(false)}
+            >
+              取消
+            </Button>
+            <Button
+              variant="danger"
+              onClick={handleDeleteScenario}
+            >
+              确认删除
+            </Button>
+          </DialogFooter>
         </div>
-      </div>
       </DialogContent>
     </Dialog>
   </div>

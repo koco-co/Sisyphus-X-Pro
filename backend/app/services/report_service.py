@@ -355,11 +355,17 @@ class ReportService:
             steps_result = await self.session.execute(steps_query)
             steps = steps_result.scalars().all()
 
+            # Calculate elapsed time from started_at and finished_at
+            elapsed_ms = None
+            if scenario.started_at and scenario.finished_at:
+                delta = scenario.finished_at - scenario.started_at
+                elapsed_ms = int(delta.total_seconds() * 1000)
+
             scenario_details.append(
                 {
                     "scenario_id": scenario.scenario_id,
                     "status": scenario.status,
-                    "elapsed_ms": scenario.elapsed_ms,
+                    "elapsed_ms": elapsed_ms,
                     "error_message": scenario.error_message,
                     "steps": [
                         {
