@@ -1,6 +1,5 @@
 """Application configuration."""
 
-from typing import Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -24,7 +23,7 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     # Redis
-    REDIS_URL: Optional[str] = None
+    REDIS_URL: str | None = None
 
     # MinIO
     MINIO_ENDPOINT: str = "localhost:9000"
@@ -40,12 +39,12 @@ class Settings(BaseSettings):
     ]
 
     # OAuth - GitHub
-    GITHUB_CLIENT_ID: Optional[str] = None
-    GITHUB_CLIENT_SECRET: Optional[str] = None
+    GITHUB_CLIENT_ID: str | None = None
+    GITHUB_CLIENT_SECRET: str | None = None
 
     # OAuth - Google
-    GOOGLE_CLIENT_ID: Optional[str] = None
-    GOOGLE_CLIENT_SECRET: Optional[str] = None
+    GOOGLE_CLIENT_ID: str | None = None
+    GOOGLE_CLIENT_SECRET: str | None = None
 
     # OAuth Settings
     OAUTH_REDIRECT_URL: str = "http://localhost:8000/api/v1/auth"
