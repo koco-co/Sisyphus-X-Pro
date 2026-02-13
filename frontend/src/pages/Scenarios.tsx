@@ -22,7 +22,7 @@ export default function Scenarios() {
   const [newScenario, setNewScenario] = useState({
     name: '',
     description: '',
-    priority: 'P2' as const,
+    priority: 'P2',
   });
 
   // 加载场景列表
@@ -323,7 +323,7 @@ export default function Scenarios() {
               取消
             </Button>
             <Button
-              variant="danger"
+              variant="destructive"
               onClick={handleDeleteScenario}
             >
               确认删除
