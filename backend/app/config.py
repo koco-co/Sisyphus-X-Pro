@@ -50,7 +50,7 @@ class Settings(BaseSettings):
     OAUTH_REDIRECT_URL: str = "http://localhost:8000/api/v1/auth"
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file="../.env",  # 从根目录读取配置
         case_sensitive=True,
         extra="allow",
     )

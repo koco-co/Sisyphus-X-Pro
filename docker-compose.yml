@@ -7,9 +7,9 @@ services:
     container_name: sisyphus-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-sisyphus}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sisyphus_password}
-      POSTGRES_DB: ${POSTGRES_DB:-sisyphus_db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-sisyphus}
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
@@ -70,7 +70,7 @@ services:
     image: redis:7-alpine
     container_name: sisyphus-redis
     restart: unless-stopped
-    command: redis-server --requirepass ${REDIS_PASSWORD:-redis_password} --appendonly yes
+    command: redis-server --requirepass ${REDIS_PASSWORD:-} --appendonly yes
     ports:
       - "${REDIS_PORT:-6379}:6379"
     volumes:

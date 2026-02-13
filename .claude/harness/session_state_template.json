@@ -1,0 +1,90 @@
+{
+  "session_id": "session-YYYYMMDD-HHMMSS",
+  "timestamp": "2025-02-13T14:30:22",
+  "current_phase": "development",
+  "completed_phases": ["requirement", "architecture"],
+  "completed_tasks": [
+    "task-1",
+    "task-2",
+    "task-3"
+  ],
+  "pending_tasks": [
+    {
+      "id": "task-4",
+      "subject": "实现Project模型",
+      "description": "创建Project SQLAlchemy模型和数据库表",
+      "status": "pending",
+      "phase": "development",
+      "assignee": "backend-agent"
+    },
+    {
+      "id": "task-5",
+      "subject": "实现Project API",
+      "description": "实现Project CRUD API端点",
+      "status": "pending",
+      "phase": "development",
+      "assignee": "backend-agent"
+    }
+  ],
+  "agent_status": {
+    "product-agent": {
+      "status": "completed",
+      "current_task": null,
+      "completed_tasks": ["task-1"]
+    },
+    "architect-agent": {
+      "status": "completed",
+      "current_task": null,
+      "completed_tasks": ["task-2", "task-3"]
+    },
+    "backend-agent": {
+      "status": "working",
+      "current_task": "task-4",
+      "completed_tasks": [],
+      "progress": 0.6
+    },
+    "frontend-agent": {
+      "status": "idle",
+      "current_task": null,
+      "completed_tasks": [],
+      "waiting_for": "backend-agent"
+    },
+    "e2e-agent": {
+      "status": "waiting",
+      "current_task": null,
+      "completed_tasks": [],
+      "blocked_by": ["backend-agent", "frontend-agent"]
+    },
+    "doc-agent": {
+      "status": "waiting",
+      "current_task": null,
+      "completed_tasks": [],
+      "blocked_by": ["e2e-agent"]
+    },
+    "qa-agent": {
+      "status": "waiting",
+      "current_task": null,
+      "completed_tasks": [],
+      "blocked_by": ["doc-agent"]
+    }
+  },
+  "git_state": {
+    "branch": "main",
+    "last_commit": "abc1234",
+    "uncommitted_changes": false
+  },
+  "quality_gates": {
+    "backend": {
+      "lint": "passed",
+      "types": "passed",
+      "coverage": 0,
+      "tests": "pending"
+    },
+    "frontend": {
+      "lint": "pending",
+      "types": "pending",
+      "tests": "pending"
+    },
+    "e2e": "pending"
+  }
+}
