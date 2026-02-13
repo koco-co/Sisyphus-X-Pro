@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ScenarioStepBase(BaseModel):
@@ -38,8 +38,7 @@ class ScenarioStepResponse(ScenarioStepBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ScenarioBase(BaseModel):
@@ -85,8 +84,7 @@ class ScenarioResponse(ScenarioBase):
     updated_at: datetime
     steps: list[ScenarioStepResponse] = Field(default_factory=list)
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ScenarioListResponse(BaseModel):
@@ -101,8 +99,7 @@ class ScenarioListResponse(BaseModel):
     updated_at: datetime
     step_count: int = Field(0, description="步骤数量")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class StepReorderRequest(BaseModel):
@@ -133,8 +130,7 @@ class DatasetResponse(DatasetBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CSVUploadResponse(BaseModel):

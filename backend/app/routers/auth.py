@@ -5,6 +5,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -201,15 +202,27 @@ async def logout():
     return {"message": "Successfully logged out"}
 
 
+class RefreshTokenRequest(BaseModel):
+    """Schema for refresh token request."""
+
+    refresh_token: str = Field(..., description="Refresh token")
+
+
 @router.post("/refresh", response_model=Token)
 async def refresh_token(
-    refresh_token: str = Depends(oauth2_scheme_refresh),
+    request: RefreshTokenRequest | None = None,
+    bearer_token: str = Depends(oauth2_scheme_refresh),
     db: AsyncSession = Depends(get_db),
 ):
     """Refresh access token using refresh token.
 
+    Accepts refresh token via either:
+    1. Authorization header: Bearer <refresh_token>
+    2. JSON body: {"refresh_token": "<token>"}
+
     Args:
-        refresh_token: Valid refresh token
+        request: Optional JSON request body with refresh_token
+        bearer_token: Refresh token from Authorization header
         db: Database session
 
     Returns:
@@ -223,6 +236,9 @@ async def refresh_token(
         detail="Invalid refresh token",
         headers={"WWW-Authenticate": "Bearer"},
     )
+
+    # Extract refresh token from either source
+    refresh_token = bearer_token or (request.refresh_token if request else None)
 
     if not refresh_token:
         raise credentials_exception

@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ReportBase(BaseModel):
@@ -53,11 +53,9 @@ class ReportResponse(ReportBase):
     finished_at: datetime | None
     allure_path: str | None
     created_at: datetime
+    updated_at: datetime | None  # TestReport 模型的 updated_at 可以为 None
 
-    class Config:
-        """Pydantic config."""
-
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ReportListResponse(BaseModel):

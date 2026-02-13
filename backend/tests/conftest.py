@@ -16,6 +16,10 @@ from app.main import app
 # 使用测试数据库
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
 
+# 注意: 不修改 ENVIRONMENT 环境变量
+# 测试默认在 production 模式下运行,需要真实的认证
+# 开发模式的测试应通过单独的 fixture 或环境变量控制
+
 
 @pytest.fixture(scope="session")
 def event_loop() -> Generator:

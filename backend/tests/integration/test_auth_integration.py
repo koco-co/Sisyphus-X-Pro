@@ -262,10 +262,10 @@ class TestAuthRefresh:
         # 创建 refresh token
         refresh_token = create_refresh_token(data={"sub": str(user.id), "email": user.email})
 
-        # 刷新 token
+        # 刷新 token - 使用 json 参数而不是 data
         response = await client.post(
             "/api/v1/auth/refresh",
-            data={
+            json={
                 "refresh_token": refresh_token,
             },
         )
@@ -280,7 +280,7 @@ class TestAuthRefresh:
         """测试使用无效 refresh token."""
         response = await client.post(
             "/api/v1/auth/refresh",
-            data={
+            json={
                 "refresh_token": "invalid_refresh_token",
             },
         )
