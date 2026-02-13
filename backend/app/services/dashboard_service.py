@@ -92,7 +92,7 @@ class DashboardService:
         result = await session.execute(
             select(
                 func.date(TestExecution.created_at).label("date"),
-                func.count(TestExecution.id).label("count"),
+                func.count(TestExecution.id).label("execution_count"),
             )
             .select_from(TestExecution)
             .join(TestPlan, TestExecution.plan_id == TestPlan.id)
@@ -104,7 +104,7 @@ class DashboardService:
         )
 
         trend = [
-            TrendDataPoint(date=str(row.date), count=row.count) for row in result.all()
+            TrendDataPoint(date=str(row.date), count=row.execution_count) for row in result.all()
         ]
 
         return TrendResponse(trend=trend)

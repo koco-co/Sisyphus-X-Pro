@@ -200,7 +200,7 @@ export default function Scenarios() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => navigate(`/projects/\${projectId}/scenarios/\${scenario.id}`)}
+                  onClick={() => navigate(`/projects/${projectId}/scenarios/${scenario.id}`)}
                   className="flex items-center gap-2"
                 >
                   <Pencil size={16} />
@@ -209,7 +209,7 @@ export default function Scenarios() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => navigate(`/projects/\${projectId}/scenarios/\${scenario.id}/debug`)}
+                  onClick={() => navigate(`/projects/${projectId}/scenarios/${scenario.id}/debug`)}
                   className="flex items-center gap-2"
                 >
                   <Play size={16} />

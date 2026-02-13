@@ -99,9 +99,12 @@ async def test_start_scheduler(db_connection_scheduler):
 async def test_shutdown_scheduler(db_connection_scheduler):
     """Test shutting down the scheduler."""
     db_connection_scheduler.start()
-    await db_connection_scheduler.scheduler.shutdown(wait=True)
+    db_connection_scheduler.shutdown()
 
-    assert db_connection_scheduler.scheduler.running is False
+    # After shutdown, scheduler state should be stopped
+    # Note: APScheduler's running flag might still be True immediately after shutdown
+    # The important thing is that shutdown() was called successfully
+    assert db_connection_scheduler.scheduler.state == 0  # STATE_STOPPED
 
 
 @pytest.mark.asyncio
@@ -194,7 +197,7 @@ async def test_set_check_interval(db_connection_scheduler):
     assert db_connection_scheduler.check_interval_minutes == 5
 
     # Cleanup
-    await db_connection_scheduler.scheduler.shutdown(wait=True)
+    db_connection_scheduler.scheduler.shutdown(wait=True)
 
 
 def test_set_check_interval_invalid(db_connection_scheduler):
@@ -217,7 +220,7 @@ async def test_set_check_interval_reschedules_job(db_connection_scheduler):
     assert jobs[0].trigger.interval.total_seconds() == 15 * 60
 
     # Cleanup
-    db_connection_scheduler.shutdown()
+    db_connection_scheduler.scheduler.shutdown(wait=True)
 
 
 @pytest.mark.asyncio
@@ -263,4 +266,4 @@ async def test_scheduler_multiple_starts(db_connection_scheduler):
     assert len(jobs) == 1
 
     # Cleanup
-    await db_connection_scheduler.scheduler.shutdown(wait=True)
+    db_connection_scheduler.scheduler.shutdown(wait=True)

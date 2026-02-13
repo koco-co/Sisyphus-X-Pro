@@ -23,7 +23,7 @@ def get_upload_service() -> UploadService:
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def upload_file(
     file: Annotated[UploadFile, File(...)],
-    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)] = None,
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(security)] = None,
     service: UploadService = Depends(get_upload_service),
 ):
     """Upload file to MinIO.
@@ -72,7 +72,7 @@ async def upload_file(
 @router.delete("/{object_name}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_file(
     object_name: str,
-    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)] = None,
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(security)] = None,
     service: UploadService = Depends(get_upload_service),
 ):
     """Delete file from MinIO.
