@@ -625,7 +625,7 @@
             "保存",
             "验证场景出现在计划中"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -641,7 +641,7 @@
             "场景2完成后",
             "验证场景3开始执行"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -655,7 +655,7 @@
             "验证10组数据并发执行",
             "验证执行时间明显少于顺序执行"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -670,7 +670,7 @@
             "验证显示已完成的场景数",
             "验证显示失败的场景数"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -687,7 +687,7 @@
             "点击终止按钮",
             "验证执行停止"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         }
       ]
@@ -837,7 +837,7 @@
   },
   "metadata": {
     "total_features": 50,
-    "completed_features": 38,
+    "completed_features": 43,
     "completion_rate": 76.0,
     "notes": "基于 FR-001 到 FR-010 需求文档的功能清单",
     "last_update_check": "2026-02-13 - 已完成 AUTH、INTF、PROJ、REPT、GPAR 模块"
