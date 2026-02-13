@@ -837,9 +837,9 @@
   },
   "metadata": {
     "total_features": 50,
-    "completed_features": 33,
-    "completion_rate": 66.0,
+    "completed_features": 38,
+    "completion_rate": 76.0,
     "notes": "基于 FR-001 到 FR-010 需求文档的功能清单",
-    "last_update_check": "2026-02-13 - 已更新所有已完成模块"
+    "last_update_check": "2026-02-13 - 已完成 AUTH、INTF、PROJ、REPT、GPAR 模块"
   }
 }
