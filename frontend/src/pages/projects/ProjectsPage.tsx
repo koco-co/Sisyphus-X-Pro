@@ -145,7 +145,7 @@ export default function ProjectsPage() {
               <h1 className="text-3xl font-bold tracking-tight">项目管理</h1>
               <p className="text-muted-foreground mt-1">管理和配置您的测试项目</p>
             </div>
-            <Button onClick={handleAdd}>
+            <Button type="button" onClick={handleAdd}>
               <Plus className="mr-2 h-4 w-4" />
               新建项目
             </Button>
