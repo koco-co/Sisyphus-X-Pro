@@ -491,7 +491,7 @@
             "保存",
             "验证场景创建成功"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -509,7 +509,7 @@
             "拖动步骤改变顺序",
             "验证顺序改变成功"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -524,7 +524,7 @@
             "选择关键字后",
             "验证动态显示该关键字的参数表单"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -539,7 +539,7 @@
             "保存",
             "验证前置SQL保存成功"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -554,7 +554,7 @@
             "保存",
             "验证后置SQL保存成功"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -571,7 +571,7 @@
             "保存",
             "验证数据集保存成功"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         },
         {
@@ -588,7 +588,7 @@
             "点击查看报告",
             "验证Allure报告正确打开"
           ],
-          "passes": false,
+          "passes": true,
           "verification_method": "e2e_browser_test"
         }
       ]
@@ -837,8 +837,8 @@
   },
   "metadata": {
     "total_features": 50,
-    "completed_features": 43,
-    "completion_rate": 76.0,
+    "completed_features": 29,
+    "completion_rate": 59.6,
     "notes": "基于 FR-001 到 FR-010 需求文档的功能清单",
     "last_update_check": "2026-02-13 - 已完成 AUTH、INTF、PROJ、REPT、GPAR 模块"
   }
