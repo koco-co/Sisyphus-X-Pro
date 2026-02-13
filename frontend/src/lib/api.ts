@@ -277,36 +277,36 @@ export class GlobalParamAPI {
     if (class_name) params.append('class_name', class_name)
     if (is_builtin !== undefined) params.append('is_builtin', is_builtin.toString())
 
-    return this.client.get<GlobalParamListResponse>(`/global-functions?${params}`)
+    return this.client.get<GlobalParamListResponse>(`/global-params?${params}`)
   }
 
   async getGlobalParamsGrouped(): Promise<GlobalParamGroupedResponse> {
-    return this.client.get<GlobalParamGroupedResponse>('/global-functions/grouped')
+    return this.client.get<GlobalParamGroupedResponse>('/global-params/grouped')
   }
 
   async getGlobalParam(id: number): Promise<GlobalParam> {
-    return this.client.get<GlobalParam>(`/global-functions/${id}`)
+    return this.client.get<GlobalParam>(`/global-params/${id}`)
   }
 
   async createGlobalParam(data: CreateGlobalParamRequest): Promise<GlobalParam> {
-    return this.client.post<GlobalParam>('/global-functions', data)
+    return this.client.post<GlobalParam>('/global-params', data)
   }
 
   async updateGlobalParam(
     id: number,
     data: UpdateGlobalParamRequest
   ): Promise<GlobalParam> {
-    return this.client.put<GlobalParam>(`/global-functions/${id}`, data)
+    return this.client.put<GlobalParam>(`/global-params/${id}`, data)
   }
 
   async deleteGlobalParam(id: number): Promise<void> {
-    return this.client.delete<void>(`/global-functions/${id}`)
+    return this.client.delete<void>(`/global-params/${id}`)
   }
 
   async parseFunctionCalls(
     request: FunctionParseRequest
   ): Promise<FunctionParseResponse> {
-    return this.client.post<FunctionParseResponse>('/global-functions/parse', request)
+    return this.client.post<FunctionParseResponse>('/global-params/parse', request)
   }
 }
 

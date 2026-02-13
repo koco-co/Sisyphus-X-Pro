@@ -55,7 +55,7 @@ export default function GlobalFunctions() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">全局参数配置</h1>
         <p className="text-gray-600 mt-2">
-          管理内置工具函数和自定义函数,可在场景中使用 {{函数名()}} 引用
+          管理内置工具函数和自定义函数,可在场景中使用 {"{{函数名()}}"} 引用
         </p>
       </div>
 
