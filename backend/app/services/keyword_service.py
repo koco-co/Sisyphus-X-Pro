@@ -1,6 +1,6 @@
 """Keyword service for business logic."""
 
-from typing import Dict, List, Optional
+
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,10 +23,10 @@ class KeywordService:
         self,
         skip: int = 0,
         limit: int = 100,
-        keyword_type: Optional[str] = None,
-        is_builtin: Optional[bool] = None,
-        is_enabled: Optional[bool] = None,
-    ) -> tuple[List[Keyword], int]:
+        keyword_type: str | None = None,
+        is_builtin: bool | None = None,
+        is_enabled: bool | None = None,
+    ) -> tuple[list[Keyword], int]:
         """List keywords with pagination and filtering.
 
         Args:
@@ -64,7 +64,7 @@ class KeywordService:
 
         return list(keywords), total
 
-    async def get_keyword_by_id(self, keyword_id: int) -> Optional[Keyword]:
+    async def get_keyword_by_id(self, keyword_id: int) -> Keyword | None:
         """Get keyword by ID.
 
         Args:
@@ -116,7 +116,7 @@ class KeywordService:
 
     async def update_keyword(
         self, keyword_id: int, keyword_in: KeywordUpdate
-    ) -> Optional[Keyword]:
+    ) -> Keyword | None:
         """Update keyword.
 
         Args:
@@ -184,7 +184,7 @@ class KeywordService:
         await self.db.flush()
         return True
 
-    async def toggle_enabled(self, keyword_id: int, is_enabled: bool) -> Optional[Keyword]:
+    async def toggle_enabled(self, keyword_id: int, is_enabled: bool) -> Keyword | None:
         """Toggle keyword enabled status.
 
         Args:
@@ -203,7 +203,7 @@ class KeywordService:
         await self.db.refresh(keyword)
         return keyword
 
-    async def get_enabled_keywords_grouped(self) -> Dict[str, List[Keyword]]:
+    async def get_enabled_keywords_grouped(self) -> dict[str, list[Keyword]]:
         """Get all enabled keywords grouped by type.
 
         Returns:
@@ -217,7 +217,7 @@ class KeywordService:
         keywords = result.scalars().all()
 
         # Group by type
-        grouped: Dict[str, List[Keyword]] = {}
+        grouped: dict[str, list[Keyword]] = {}
         for keyword in keywords:
             if keyword.type not in grouped:
                 grouped[keyword.type] = []

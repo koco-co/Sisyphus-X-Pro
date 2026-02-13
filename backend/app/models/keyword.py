@@ -1,8 +1,8 @@
 """Keyword model."""
 
-from typing import Any, Optional
+from typing import Any
 
-from sqlalchemy import JSON, Boolean, Index, String, UniqueConstraint
+from sqlalchemy import JSON, Boolean, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
@@ -25,7 +25,7 @@ class Keyword(Base, TimestampMixin):
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     method_name: Mapped[str] = mapped_column(String(200), nullable=False)
     code: Mapped[str] = mapped_column(nullable=False)
-    params: Mapped[Optional[dict[str, Any]]] = mapped_column(
+    params: Mapped[dict[str, Any] | None] = mapped_column(
         JSON, default=dict
     )  # [{name, description}]
     is_builtin: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)

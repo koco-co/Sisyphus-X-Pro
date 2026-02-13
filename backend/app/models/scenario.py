@@ -3,7 +3,7 @@
 from typing import Any, Optional
 
 from sqlalchemy import JSON, ForeignKey, Index, Integer, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 from app.models.base import TimestampMixin
@@ -36,6 +36,9 @@ class Scenario(Base, TimestampMixin):
     creator_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
+
+    # Relationships
+    steps = relationship("ScenarioStep", back_populates="scenario", cascade="all, delete-orphan")
 
     __table_args__ = ()
 

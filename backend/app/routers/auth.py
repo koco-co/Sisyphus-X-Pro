@@ -17,16 +17,16 @@ from app.middleware.auth import (
     decode_token,
     get_current_user,
 )
+from app.models.user import User
+from app.schemas.auth import Token, UserCreate, UserLogin, UserResponse
+from app.services import get_github_oauth_service, get_google_oauth_service
+from app.utils.password import hash_password
 
 # OAuth2 scheme for refresh token
 oauth2_scheme_refresh = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/auth/refresh",
     auto_error=False,
 )
-from app.models.user import User
-from app.schemas.auth import Token, UserCreate, UserLogin, UserResponse
-from app.services import get_github_oauth_service, get_google_oauth_service
-from app.utils.password import hash_password
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 

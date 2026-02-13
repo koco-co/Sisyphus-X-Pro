@@ -97,8 +97,12 @@ class ScenarioService:
         Returns:
             Scenario if found, None otherwise
         """
+        from sqlalchemy.orm import selectinload
+
         result = await self.session.execute(
-            select(Scenario).where(Scenario.id == scenario_id)
+            select(Scenario)
+            .options(selectinload(Scenario.steps))
+            .where(Scenario.id == scenario_id)
         )
         return result.scalar_one_or_none()
 

@@ -120,7 +120,7 @@ class FunctionExecutor:
         except (SyntaxError, ValueError):
             return False
 
-    def execute_function(self, call_expr: str, context: Dict[str, Any]) -> Any:
+    def execute_function(self, call_expr: str, context: dict[str, Any]) -> Any:
         """Execute a single function call.
 
         Args:
@@ -158,7 +158,8 @@ class FunctionExecutor:
         Returns:
             Tuple of (parsed_text, functions_called, success, error_message)
         """
-        pattern = r"\{\{([^}]+)\}\}"
+        # Use non-greedy matching to handle multiple {{}} correctly
+        pattern = r"\{\{(.+?)\}\}"
         functions_called = []
 
         def replace_func(match):

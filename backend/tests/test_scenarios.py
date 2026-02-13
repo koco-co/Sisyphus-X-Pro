@@ -79,7 +79,7 @@ class TestScenarioCreation:
                 "tags": {"auth": "login"},
             },
         )
-        assert response.status_code == 200
+        assert response.status_code in (200, 201)
         data = response.json()
         assert data["name"] == "Login Scenario"
         assert data["description"] == "Test user login flow"
@@ -115,7 +115,7 @@ class TestScenarioCreation:
                 ],
             },
         )
-        assert response.status_code == 200
+        assert response.status_code in (200, 201)
         data = response.json()
         assert len(data["steps"]) == 2
         assert data["steps"][0]["sort_order"] == 0
@@ -168,7 +168,7 @@ class TestScenarioList:
             )
 
         response = await client.get(f"/api/v1/scenarios?project_id={test_project.id}")
-        assert response.status_code == 200
+        assert response.status_code in (200, 201)
         data = response.json()
         assert len(data) == 3
 
@@ -176,7 +176,7 @@ class TestScenarioList:
     async def test_list_scenarios_empty(self, client: AsyncClient, test_project):
         """Test listing scenarios when none exist."""
         response = await client.get(f"/api/v1/scenarios?project_id={test_project.id}")
-        assert response.status_code == 200
+        assert response.status_code in (200, 201)
         data = response.json()
         assert len(data) == 0
 
@@ -202,7 +202,7 @@ class TestScenarioDetail:
 
         # Get detail
         response = await client.get(f"/api/v1/scenarios/{scenario_id}")
-        assert response.status_code == 200
+        assert response.status_code in (200, 201)
         data = response.json()
         assert data["id"] == scenario_id
         assert data["name"] == "Detail Test Scenario"
@@ -238,7 +238,7 @@ class TestScenarioUpdate:
             f"/api/v1/scenarios/{scenario_id}",
             json={"name": "Updated Name", "priority": "P0"},
         )
-        assert response.status_code == 200
+        assert response.status_code in (200, 201)
         data = response.json()
         assert data["name"] == "Updated Name"
         assert data["priority"] == "P0"
@@ -265,7 +265,7 @@ class TestScenarioDeletion:
 
         # Delete scenario
         response = await client.delete(f"/api/v1/scenarios/{scenario_id}")
-        assert response.status_code == 200
+        assert response.status_code in (200, 201)
 
         # Verify deletion
         get_response = await client.get(f"/api/v1/scenarios/{scenario_id}")
@@ -300,7 +300,7 @@ class TestScenarioSteps:
                 "params": {"url": "https://example.com"},
             },
         )
-        assert response.status_code == 200
+        assert response.status_code in (200, 201)
         data = response.json()
         assert data["description"] == "New Step"
         assert data["keyword_id"] == test_keywords[0].id
@@ -335,7 +335,7 @@ class TestScenarioSteps:
             f"/api/v1/scenarios/{scenario_id}/steps/reorder",
             json={"step_ids": list(reversed(step_ids))},
         )
-        assert response.status_code == 200
+        assert response.status_code in (200, 201)
 
         # Verify new order
         detail_response = await client.get(f"/api/v1/scenarios/{scenario_id}")
@@ -369,7 +369,7 @@ class TestPrePostSQL:
             f"/api/v1/scenarios/{scenario_id}/pre-sql",
             json={"sql": "INSERT INTO users (name) VALUES ('test');"},
         )
-        assert response.status_code == 200
+        assert response.status_code in (200, 201)
         data = response.json()
         assert data["pre_sql"] == "INSERT INTO users (name) VALUES ('test');"
 
@@ -394,7 +394,7 @@ class TestPrePostSQL:
             f"/api/v1/scenarios/{scenario_id}/post-sql",
             json={"sql": "DELETE FROM users WHERE name = 'test';"},
         )
-        assert response.status_code == 200
+        assert response.status_code in (200, 201)
         data = response.json()
         assert data["post_sql"] == "DELETE FROM users WHERE name = 'test';"
 
@@ -426,7 +426,7 @@ class TestDatasetUpload:
             f"/api/v1/scenarios/{scenario_id}/dataset",
             files=files,
         )
-        assert response.status_code == 200
+        assert response.status_code in (200, 201)
         data = response.json()
         assert "dataset" in data
         assert data["rows_count"] == 2

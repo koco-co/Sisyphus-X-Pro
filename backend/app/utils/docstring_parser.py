@@ -183,11 +183,13 @@ def _extract_signature_params(func_def: ast.FunctionDef) -> dict[str, dict[str, 
         if arg.arg == "self":
             continue
 
-        param_info = {"type": None, "default": None}
+        param_info: dict[str, str | None] = {"type": None, "default": None}
 
         # Get type annotation
         if arg.annotation:
-            param_info["type"] = _unparse_type(arg.annotation)
+            type_result = _unparse_type(arg.annotation)
+            if type_result is not None:
+                param_info["type"] = type_result
 
         # Check if parameter has default value
         defaults_start = len(func_def.args.args) - len(func_def.args.defaults)
@@ -256,10 +258,14 @@ def _unparse_ast(node: ast.AST) -> Any:
             elif isinstance(node, ast.List):
                 return [_unparse_ast(e) for e in node.elts]
             elif isinstance(node, ast.Dict):
-                return {
-                    _unparse_ast(k): _unparse_ast(v)
-                    for k, v in zip(node.keys, node.values)
-                }
+                result: dict[Any, Any] = {}
+                for k, v in zip(node.keys, node.values, strict=False):
+                    if isinstance(k, ast.AST) and isinstance(v, ast.AST):
+                        k_result = _unparse_ast(k)
+                        v_result = _unparse_ast(v)
+                        if k_result is not None and v_result is not None:
+                            result[k_result] = v_result
+                return result
             else:
                 return None
     except Exception:
