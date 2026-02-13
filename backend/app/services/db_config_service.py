@@ -280,3 +280,42 @@ class DatabaseConfigService:
         await self.db.flush()
         await self.db.refresh(config)
         return config
+
+    async def get_all_configs(self) -> List[DatabaseConfig]:
+        """Get all database configs.
+
+        Returns:
+            List of all database configs
+        """
+        result = await self.db.execute(select(DatabaseConfig))
+        return list(result.scalars().all())
+
+    async def update_connection_status(
+        self,
+        config_id: int,
+        is_connected: bool,
+        last_error: Optional[str] = None,
+    ) -> Optional[DatabaseConfig]:
+        """Update database connection status.
+
+        Args:
+            config_id: Config ID
+            is_connected: Connection status
+            last_error: Error message if connection failed
+
+        Returns:
+            Updated config or None if not found
+        """
+        config = await self.get_db_config_by_id(config_id)
+        if not config:
+            return None
+
+        from datetime import datetime, timezone
+
+        config.is_connected = is_connected
+        config.last_check_at = datetime.now(timezone.utc)
+        config.last_error = last_error if not is_connected else None
+
+        await self.db.flush()
+        await self.db.refresh(config)
+        return config

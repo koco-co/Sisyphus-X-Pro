@@ -17,6 +17,7 @@ from app.schemas.database_config import (
     TestConnectionResponse,
 )
 from app.services.db_config_service import DatabaseConfigService
+from app.services.db_connection_scheduler import get_db_connection_scheduler
 
 router = APIRouter(prefix="/projects/{project_id}/db-configs", tags=["Database Configs"])
 
@@ -93,6 +94,7 @@ async def list_db_configs(
             is_enabled=c.is_enabled,
             created_at=c.created_at,
             last_check_at=c.last_check_at,
+            last_error=getattr(c, 'last_error', None),
         )
         for c in configs
     ]
@@ -142,6 +144,7 @@ async def create_db_config(
             is_enabled=config.is_enabled,
             created_at=config.created_at,
             last_check_at=config.last_check_at,
+            last_error=getattr(config, 'last_error', None),
         )
     except ValueError as e:
         raise HTTPException(
@@ -193,6 +196,7 @@ async def get_db_config(
         is_enabled=config.is_enabled,
         created_at=config.created_at,
         last_check_at=config.last_check_at,
+        last_error=getattr(config, 'last_error', None),
     )
 
 
@@ -244,6 +248,7 @@ async def update_db_config(
             is_enabled=config.is_enabled,
             created_at=config.created_at,
             last_check_at=config.last_check_at,
+            last_error=getattr(config, 'last_error', None),
         )
     except ValueError as e:
         raise HTTPException(
@@ -365,4 +370,67 @@ async def toggle_db_config(
         is_enabled=config.is_enabled,
         created_at=config.created_at,
         last_check_at=config.last_check_at,
+        last_error=getattr(config, 'last_error', None),
     )
+
+
+@router.post("/check-all")
+async def check_all_connections(
+    project_id: int,
+    current_user: User = Depends(get_current_user),
+):
+    """Manually trigger connection check for all database configs.
+
+    Args:
+        project_id: Project ID (used for routing)
+        current_user: Current authenticated user (enforces authentication)
+
+    Returns:
+        Connection check results
+    """
+    # Mark parameters as intentionally used for routing and authentication
+    _ = (project_id, current_user)
+    scheduler = get_db_connection_scheduler()
+    if not scheduler:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database connection scheduler not available",
+        )
+
+    result = await scheduler.check_now()
+    return {
+        "success_count": result["success_count"],
+        "failure_count": result["failure_count"],
+        "message": f"检查完成: {result['success_count']} 个成功, {result['failure_count']} 个失败",
+    }
+
+
+@router.get("/scheduler/status")
+async def get_scheduler_status(
+    project_id: int,
+    current_user: User = Depends(get_current_user),
+):
+    """Get database connection scheduler status.
+
+    Args:
+        project_id: Project ID (used for routing)
+        current_user: Current authenticated user (enforces authentication)
+
+    Returns:
+        Scheduler status information
+    """
+    # Mark parameters as intentionally used for routing and authentication
+    _ = (project_id, current_user)
+    scheduler = get_db_connection_scheduler()
+    if not scheduler:
+        return {
+            "running": False,
+            "check_interval_minutes": 0,
+            "message": "调度器未启动",
+        }
+
+    return {
+        "running": scheduler.scheduler.running,
+        "check_interval_minutes": scheduler.check_interval_minutes,
+        "message": f"调度器运行中,每 {scheduler.check_interval_minutes} 分钟检查一次",
+    }

@@ -25,6 +25,10 @@ from app.routers import (
 )
 from app.services.global_param_service import GlobalParamService
 from app.services.report_scheduler import init_report_scheduler, shutdown_report_scheduler
+from app.services.db_connection_scheduler import (
+    init_db_connection_scheduler,
+    shutdown_db_connection_scheduler,
+)
 
 
 @asynccontextmanager
@@ -57,9 +61,13 @@ async def lifespan(app: FastAPI):
 
     init_report_scheduler(async_session_maker)
 
+    # Initialize database connection scheduler
+    init_db_connection_scheduler(async_session_maker)
+
     yield
-    # Shutdown: Close database connections and stop scheduler
+    # Shutdown: Close database connections and stop schedulers
     shutdown_report_scheduler()
+    shutdown_db_connection_scheduler()
     await engine.dispose()
 
 

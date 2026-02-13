@@ -90,9 +90,9 @@ async def test_login_success(async_client: AsyncClient, db_session):
     db_session.add(user)
     await db_session.commit()
 
-    # Login
+    # Login using /login/json endpoint (JSON format)
     response = await async_client.post(
-        "/api/v1/auth/login",
+        "/api/v1/auth/login/json",
         json={
             "email": "test@example.com",
             "password": "password123",
@@ -120,9 +120,9 @@ async def test_login_wrong_password(async_client: AsyncClient, db_session):
     db_session.add(user)
     await db_session.commit()
 
-    # Login with wrong password
+    # Login with wrong password using /login/json endpoint
     response = await async_client.post(
-        "/api/v1/auth/login",
+        "/api/v1/auth/login/json",
         json={
             "email": "test@example.com",
             "password": "wrongpassword",
@@ -149,9 +149,9 @@ async def test_login_account_locked(async_client: AsyncClient, db_session):
     db_session.add(user)
     await db_session.commit()
 
-    # Try to login
+    # Try to login using /login/json endpoint
     response = await async_client.post(
-        "/api/v1/auth/login",
+        "/api/v1/auth/login/json",
         json={
             "email": "test@example.com",
             "password": "password123",
@@ -176,9 +176,9 @@ async def test_login_account_unlocked_after_timeout(
     db_session.add(user)
     await db_session.commit()
 
-    # Login should succeed
+    # Login should succeed using /login/json endpoint
     response = await async_client.post(
-        "/api/v1/auth/login",
+        "/api/v1/auth/login/json",
         json={
             "email": "test@example.com",
             "password": "password123",
@@ -196,7 +196,7 @@ async def test_login_account_unlocked_after_timeout(
 async def test_login_nonexistent_user(async_client: AsyncClient):
     """Test login with non-existent user fails."""
     response = await async_client.post(
-        "/api/v1/auth/login",
+        "/api/v1/auth/login/json",
         json={
             "email": "nonexistent@example.com",
             "password": "password123",
@@ -226,13 +226,14 @@ async def test_get_current_user(async_client: AsyncClient, db_session):
     await db_session.commit()
 
     login_response = await async_client.post(
-        "/api/v1/auth/login",
+        "/api/v1/auth/login/json",
         json={
             "email": "test@example.com",
             "password": "password123",
         },
     )
-    token = login_response.json()["access_token"]
+    token_data = login_response.json()
+    token = token_data["access_token"]
 
     # Get current user
     response = await async_client.get(
@@ -256,13 +257,14 @@ async def test_refresh_token(async_client: AsyncClient, db_session):
     await db_session.commit()
 
     login_response = await async_client.post(
-        "/api/v1/auth/login",
+        "/api/v1/auth/login/json",
         json={
             "email": "test@example.com",
             "password": "password123",
         },
     )
-    refresh_token = login_response.json()["refresh_token"]
+    token_data = login_response.json()
+    refresh_token = token_data["refresh_token"]
 
     # Refresh token
     response = await async_client.post(
@@ -300,13 +302,14 @@ async def test_refresh_token_wrong_type(async_client: AsyncClient, db_session):
     await db_session.commit()
 
     login_response = await async_client.post(
-        "/api/v1/auth/login",
+        "/api/v1/auth/login/json",
         json={
             "email": "test@example.com",
             "password": "password123",
         },
     )
-    access_token = login_response.json()["access_token"]
+    token_data = login_response.json()
+    access_token = token_data["access_token"]
 
     # Try to use access token as refresh token
     response = await async_client.post(
@@ -355,9 +358,9 @@ async def test_login_oauth_user_no_password(async_client: AsyncClient, db_sessio
     db_session.add(user)
     await db_session.commit()
 
-    # Try to login with password
+    # Try to login with password using /login/json endpoint
     response = await async_client.post(
-        "/api/v1/auth/login",
+        "/api/v1/auth/login/json",
         json={
             "email": "oauth@example.com",
             "password": "password123",
@@ -367,14 +370,20 @@ async def test_login_oauth_user_no_password(async_client: AsyncClient, db_sessio
 
 
 @pytest.mark.asyncio
-async def test_development_mode_skip_auth(async_client: AsyncClient, monkeypatch):
+async def test_development_mode_skip_auth(async_client: AsyncClient):
     """Test development mode skips authentication."""
     # This test verifies that in development mode,
     # requests without auth token still work for /auth/me
-    # Note: This depends on APP_ENV=development
+    # Note: This depends on ENVIRONMENT=development
 
     response = await async_client.get("/api/v1/auth/me")
     # In development mode, should return mock user
     # In production, should return 401
     # We just verify the endpoint responds
     assert response.status_code in [status.HTTP_200_OK, status.HTTP_401_UNAUTHORIZED]
+
+    if response.status_code == status.HTTP_200_OK:
+        # If in development mode, verify mock user structure
+        data = response.json()
+        assert "email" in data
+        assert "nickname" in data

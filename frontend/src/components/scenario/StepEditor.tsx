@@ -57,7 +57,7 @@ export default function StepEditor({ keywordId, params, onChange }: StepEditorPr
 
   async function loadKeywordDetails(id: number) {
     try {
-      const response = await api.get<Keyword>(\`/keywords/\${id}\`);
+      const response = await api.get<Keyword>(`/keywords/${id}`);
       if (response.success && response.data) {
         setKeywordDetails(response.data);
         setSelectedKeywordId(id);

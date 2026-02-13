@@ -66,6 +66,7 @@ class DatabaseConfigResponse(BaseModel):
     is_enabled: bool
     created_at: datetime
     last_check_at: Optional[datetime] = None
+    last_error: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 

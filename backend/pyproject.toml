@@ -37,6 +37,8 @@ dev = [
     "ruff>=0.9.6",
     "pyright>=1.1.396",
     "aiosqlite>=0.22.1",
+    "pytest-cov>=7.0.0",
+    "faker>=40.4.0",
 ]
 
 [tool.ruff]

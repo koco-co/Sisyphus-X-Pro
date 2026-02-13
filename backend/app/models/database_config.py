@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
@@ -33,6 +33,7 @@ class DatabaseConfig(Base, TimestampMixin):
     is_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     is_connected: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     last_check_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_error: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     __table_args__ = (UniqueConstraint("project_id", "variable_name", name="uq_project_variable"),)
 
