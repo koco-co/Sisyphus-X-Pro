@@ -99,7 +99,7 @@ async def test_start_scheduler(db_connection_scheduler):
 async def test_shutdown_scheduler(db_connection_scheduler):
     """Test shutting down the scheduler."""
     db_connection_scheduler.start()
-    db_connection_scheduler.shutdown()
+    await db_connection_scheduler.scheduler.shutdown(wait=True)
 
     assert db_connection_scheduler.scheduler.running is False
 

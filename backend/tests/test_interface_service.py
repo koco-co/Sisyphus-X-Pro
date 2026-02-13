@@ -10,6 +10,7 @@ from app.schemas.interface import (
     InterfaceCreate,
     InterfaceFolderCreate,
     InterfaceUpdate,
+    InterfaceReorderRequest,
 )
 from app.services.interface_service import InterfaceService
 
