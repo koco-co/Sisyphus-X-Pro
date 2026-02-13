@@ -355,7 +355,7 @@ async def upload_dataset(
     Raises:
         HTTPException: If scenario not found or file invalid
     """
-    if not file.filename.endswith(".csv"):
+    if not file.filename or not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="Only CSV files are supported")
 
     content = await file.read()
@@ -363,7 +363,7 @@ async def upload_dataset(
 
     dataset = await service.create_dataset_from_csv(
         scenario_id=scenario_id,
-        filename=file.filename,
+        filename=file.filename or "uploaded.csv",
         csv_content=csv_content,
     )
 

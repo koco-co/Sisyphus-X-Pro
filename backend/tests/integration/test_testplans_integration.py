@@ -8,7 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
 from app.models.project import Project
 from app.models.scenario import Scenario
-from app.models.test_plan import TestPlan, PlanScenario
+from app.models.test_plan import TestPlan
+from app.models.plan_scenario import PlanScenario
 from app.models.environment import Environment
 from app.utils.password import hash_password
 

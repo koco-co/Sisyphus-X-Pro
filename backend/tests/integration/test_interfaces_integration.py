@@ -7,7 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
 from app.models.project import Project
-from app.models.interface import Interface, InterfaceFolder
+from app.models.interface import Interface
+from app.models.interface_folder import InterfaceFolder
 from app.utils.password import hash_password
 
 

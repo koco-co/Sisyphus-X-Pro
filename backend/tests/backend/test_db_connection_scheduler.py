@@ -252,10 +252,15 @@ async def test_check_now_with_mixed_results(
 async def test_scheduler_multiple_starts(db_connection_scheduler):
     """Test starting scheduler multiple times doesn't create duplicate jobs."""
     db_connection_scheduler.start()
-    db_connection_scheduler.start()  # Should not create duplicate jobs
 
+    # Second start should raise SchedulerAlreadyRunningError
+    from apscheduler.schedulers import SchedulerAlreadyRunningError
+    with pytest.raises(SchedulerAlreadyRunningError):
+        db_connection_scheduler.start()
+
+    # Should still have only one job
     jobs = db_connection_scheduler.scheduler.get_jobs()
     assert len(jobs) == 1
 
     # Cleanup
-    db_connection_scheduler.shutdown()
+    await db_connection_scheduler.scheduler.shutdown(wait=True)

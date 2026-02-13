@@ -5,7 +5,7 @@ import { ApiClient } from '@/lib/api';
 import type { Scenario } from '@/types/scenario';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { Dialog } from '@/components/ui/Dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/Dialog';
 import { Input } from '@/components/ui/Input';
 
 export default function Scenarios() {
@@ -235,12 +235,12 @@ export default function Scenarios() {
     </div>
 
     {/* 创建场景对话框 */}
-    <Dialog
-      isOpen={isCreateDialogOpen}
-      onClose={() => setIsCreateDialogOpen(false)}
-      title="创建新场景"
-    >
-      <form onSubmit={(e) => { e.preventDefault(); handleCreateScenario(); }} className="space-y-4">
+    <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>创建新场景</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={(e) => { e.preventDefault(); handleCreateScenario(); }} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             场景名称 <span className="text-red-500">*</span>
@@ -300,15 +300,16 @@ export default function Scenarios() {
           </Button>
         </div>
       </form>
+      </DialogContent>
     </Dialog>
 
     {/* 删除确认对话框 */}
-    <Dialog
-      isOpen={isDeleteDialogOpen}
-      onClose={() => setIsDeleteDialogOpen(false)}
-      title="确认删除"
-    >
-      <div className="space-y-4">
+    <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>确认删除</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
         <p className="text-gray-700">
           确定要删除场景 <strong>{scenarioToDelete?.name}</strong> 吗？
         </p>
@@ -330,6 +331,7 @@ export default function Scenarios() {
           </Button>
         </div>
       </div>
+      </DialogContent>
     </Dialog>
   </div>
   );

@@ -109,6 +109,7 @@ async def get_current_user(
             nickname="Dev User",
             provider="email",
             is_active=True,
+            created_at=datetime.now(timezone.utc),
         )
         return mock_user
 

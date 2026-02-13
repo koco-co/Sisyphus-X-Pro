@@ -74,8 +74,8 @@ async def list_global_params(
             method_name=p.method_name,
             description=p.description,
             code=p.code,
-            params_in=p.params_in or [],
-            params_out=p.params_out or [],
+            params_in=p.params_in if isinstance(p.params_in, list) else [],
+            params_out=p.params_out if isinstance(p.params_out, list) else [],
             is_builtin=p.is_builtin,
             created_at=p.created_at,
         )
