@@ -1,4 +1,4 @@
-import { LogOut, User, List, Play, Code } from 'lucide-react'
+import { LogOut, User, List, Play, Code, FileText } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
@@ -110,7 +110,7 @@ export default function Header() {
               }}
               className="flex items-center cursor-pointer"
             >
-              <List className="mr-2 h-4 w-4" />
+              <FileText className="mr-2 h-4 w-4" />
               <span>测试报告</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />

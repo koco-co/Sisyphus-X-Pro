@@ -11,6 +11,7 @@ import Header from '@/components/layout/Header'
 import ScenariosPage from '@/pages/scenarios/ScenariosPage'
 import TestPlansPage from '@/pages/test-plans/TestPlansPage'
 import GlobalFunctions from '@/pages/GlobalFunctions'
+import ReportsPage from '@/pages/reports/ReportsPage'
 import { apiClient } from '@/lib/api'
 import { useEffect, useCallback } from 'react'
 
@@ -176,6 +177,16 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <GlobalFunctions />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 受保护路由 - 测试报告 */}
+      <Route
+        path="/reports"
+        element={
+          <ProtectedRoute>
+            <ReportsPage />
           </ProtectedRoute>
         }
       />

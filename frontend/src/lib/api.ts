@@ -310,6 +310,110 @@ export class GlobalParamAPI {
   }
 }
 
+// Report 相关类型和 API
+export interface TestReport {
+  id: number
+  execution_id: string
+  plan_id: number
+  status: string
+  total_scenarios: number
+  passed: number
+  failed: number
+  skipped: number
+  duration_seconds: number | null
+  executor_id: number
+  environment_name: string
+  started_at: string
+  finished_at: string | null
+  allure_path: string | null
+  created_at: string
+  updated_at: string | null
+}
+
+export interface ReportListResponse {
+  reports: TestReport[]
+  total: number
+  page: number
+  limit: number
+}
+
+export interface ReportStatistics {
+  total_reports: number
+  total_scenarios: number
+  total_passed: number
+  total_failed: number
+  total_skipped: number
+  pass_rate: number
+  average_duration: number | null
+}
+
+export interface ReportExportRequest {
+  format: 'pdf' | 'excel' | 'html'
+  include_details: boolean
+}
+
+export interface AllureReportResponse {
+  url: string
+  expires_at: string | null
+}
+
+export class ReportAPI {
+  client: ApiClient
+
+  constructor(client: ApiClient) {
+    this.client = client
+  }
+
+  async getReports(params: {
+    page?: number
+    limit?: number
+    plan_id?: number
+    status?: string
+  } = {}): Promise<ReportListResponse> {
+    const queryParams = new URLSearchParams()
+    if (params.page) queryParams.append('page', params.page.toString())
+    if (params.limit) queryParams.append('limit', params.limit.toString())
+    if (params.plan_id) queryParams.append('plan_id', params.plan_id.toString())
+    if (params.status) queryParams.append('status', params.status)
+
+    const queryString = queryParams.toString()
+    return this.client.get<ReportListResponse>(`/reports${queryString ? `?${queryString}` : ''}`)
+  }
+
+  async getReport(reportId: number): Promise<TestReport> {
+    return this.client.get<TestReport>(`/reports/${reportId}`)
+  }
+
+  async getStatistics(): Promise<ReportStatistics> {
+    return this.client.get<ReportStatistics>('/reports/statistics')
+  }
+
+  async getAllureReport(reportId: number): Promise<AllureReportResponse> {
+    return this.client.get<AllureReportResponse>(`/reports/${reportId}/allure`)
+  }
+
+  async deleteReport(reportId: number): Promise<void> {
+    return this.client.delete<void>(`/reports/${reportId}`)
+  }
+
+  async exportReport(reportId: number, request: ReportExportRequest): Promise<Blob> {
+    const response = await fetch(`${this.client.baseUrl}/reports/${reportId}/export`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(this.client.token && { Authorization: `Bearer ${this.client.token}` }),
+      },
+      body: JSON.stringify(request),
+    })
+
+    if (!response.ok) {
+      throw new Error('导出报告失败')
+    }
+
+    return response.blob()
+  }
+}
+
 // 创建全局 API 客户端实例
 export const apiClient = new ApiClient()
 
@@ -318,3 +422,6 @@ export const dashboardAPI = new DashboardAPI(apiClient)
 
 // 创建 GlobalParam API 实例
 export const globalParamAPI = new GlobalParamAPI(apiClient)
+
+// 创建 Report API 实例
+export const reportAPI = new ReportAPI(apiClient)
