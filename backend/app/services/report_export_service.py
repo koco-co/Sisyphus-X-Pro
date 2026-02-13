@@ -25,11 +25,13 @@ except ImportError:
 
 try:
     from openpyxl import Workbook
+    from openpyxl.cell import MergedCell
     from openpyxl.styles import Alignment, Font, PatternFill
 
     OPENPYXL_AVAILABLE = True
 except ImportError:
     OPENPYXL_AVAILABLE = False
+    MergedCell = None  # type: ignore
     print("Warning: openpyxl not available. Excel export will be disabled.")
 
 try:
@@ -227,7 +229,10 @@ class ReportExportService:
         # Create workbook
         wb = Workbook()
         ws = wb.active
-        ws.title = "Test Report"
+        if ws is None:
+            ws = wb.create_sheet("Test Report")
+        else:
+            ws.title = "Test Report"
 
         # Title
         ws["A1"] = f"Test Report #{report.id}"
@@ -295,19 +300,25 @@ class ReportExportService:
                     headers = ["#", "Step ID", "Status", "Elapsed (ms)", "Error"]
                     for col, header in enumerate(headers, 1):
                         cell = ws.cell(row=row, column=col)
-                        cell.value = header
-                        cell.font = Font(bold=True, color="FFFFFF")
-                        cell.fill = PatternFill(start_color="2ECC71", end_color="2ECC71", fill_type="solid")
-                        cell.alignment = Alignment(horizontal="center")
+                        if MergedCell is None or not isinstance(cell, MergedCell):
+                            cell.value = header  # type: ignore[arg-type]
+                            cell.font = Font(bold=True, color="FFFFFF")
+                            cell.fill = PatternFill(start_color="2ECC71", end_color="2ECC71", fill_type="solid")
+                            cell.alignment = Alignment(horizontal="center")
                     row += 1
 
                     # Step rows
                     for step in scenario["steps"]:
-                        ws.cell(row=row, column=1).value = step["sort_order"]
-                        ws.cell(row=row, column=2).value = step["step_id"]
-                        ws.cell(row=row, column=3).value = step["status"]
-                        ws.cell(row=row, column=4).value = step.get("elapsed_ms") or "N/A"
-                        ws.cell(row=row, column=5).value = step.get("error_message") or ""
+                        for col_idx, value in enumerate([
+                            step["sort_order"],
+                            step["step_id"],
+                            step["status"],
+                            step.get("elapsed_ms") or "N/A",
+                            step.get("error_message") or "",
+                        ], 1):
+                            cell = ws.cell(row=row, column=col_idx)
+                            if MergedCell is None or not isinstance(cell, MergedCell):
+                                cell.value = value  # type: ignore[arg-type]
                         row += 1
 
                 row += 1
@@ -315,15 +326,26 @@ class ReportExportService:
         # Auto-adjust column widths
         for column in ws.columns:
             max_length = 0
-            column_letter = column[0].column_letter
-            for cell in column:
-                try:
-                    if len(str(cell.value)) > max_length:
-                        max_length = len(str(cell.value))
-                except Exception:
-                    pass
-            adjusted_width = (max_length + 2) * 1.2
-            ws.column_dimensions[column_letter].width = min(adjusted_width, 50)
+            # Get column letter from first cell
+            if column:
+                first_cell = column[0]
+                # Safely get column letter
+                if hasattr(first_cell, 'column_letter') and not isinstance(first_cell, MergedCell if MergedCell else object):
+                    column_letter = first_cell.column_letter  # type: ignore[attr-defined]
+                else:
+                    # Fallback: calculate column letter from index
+                    col_idx = list(ws.columns).index(column) + 1
+                    column_letter = chr(64 + col_idx) if col_idx <= 26 else 'A'
+
+                for cell in column:
+                    try:
+                        if (MergedCell is None or not isinstance(cell, MergedCell)) and cell.value:
+                            if len(str(cell.value)) > max_length:
+                                max_length = len(str(cell.value))
+                    except Exception:
+                        pass
+                adjusted_width = (max_length + 2) * 1.2
+                ws.column_dimensions[column_letter].width = min(adjusted_width, 50)
 
         # Save to buffer
         buffer = BytesIO()

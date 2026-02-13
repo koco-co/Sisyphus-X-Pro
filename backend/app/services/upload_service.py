@@ -1,7 +1,9 @@
 """File upload service for MinIO object storage."""
 
 import uuid
+from datetime import timedelta
 from io import BytesIO
+from typing import Any
 
 from minio import Minio
 from minio.error import S3Error
@@ -36,7 +38,7 @@ class UploadService:
         file_data: bytes,
         filename: str,
         content_type: str = "application/octet-stream",
-    ) -> dict[str, any]:
+    ) -> dict[str, Any]:
         """Upload file to MinIO.
 
         Args:
@@ -66,7 +68,7 @@ class UploadService:
             url = self.client.presigned_get_object(
                 bucket_name=self.bucket,
                 object_name=object_name,
-                expires=60 * 60 * 24 * 7,  # 7 days
+                expires=timedelta(days=7),  # 7 days
             )
 
             return {
@@ -109,7 +111,7 @@ class UploadService:
             return self.client.presigned_get_object(
                 bucket_name=self.bucket,
                 object_name=object_name,
-                expires=expires,
+                expires=timedelta(seconds=expires),
             )
         except S3Error as e:
             print(f"Get URL failed: {e}")

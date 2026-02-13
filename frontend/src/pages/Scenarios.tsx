@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/Input';
 export default function Scenarios() {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
-  const api = ApiClient.getInstance();
+  const api = new ApiClient();
 
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
   const [loading, setLoading] = useState(true);
@@ -216,7 +216,7 @@ export default function Scenarios() {
                   调试
                 </Button>
                 <Button
-                  variant="danger"
+                  variant="destructive"
                   size="sm"
                   onClick={() => {
                     setScenarioToDelete(scenario);
@@ -232,10 +232,9 @@ export default function Scenarios() {
           ))}
         </div>
       )}
-    </div>
 
-    {/* 创建场景对话框 */}
-    <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+      {/* 创建场景对话框 */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
       <DialogContent onClose={() => setIsCreateDialogOpen(false)}>
         <DialogHeader>
           <DialogTitle>创建新场景</DialogTitle>
