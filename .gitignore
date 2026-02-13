@@ -7,9 +7,13 @@
 .vscode/
 .idea/
 .cursor/
-.claude/
 .agent/
 .agents/
+
+# Claude - 保留 harness 系统,忽略其他配置
+.claude/rules/
+.claude/settings.json
+.claude/skills/
 
 # Logs
 logs/

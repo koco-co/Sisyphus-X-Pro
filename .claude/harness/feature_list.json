@@ -1,0 +1,844 @@
+{
+  "project": "Sisyphus-X-Pro",
+  "version": "1.0.0",
+  "description": "企业级自动化测试管理平台",
+  "last_updated": "2026-02-13",
+  "categories": {
+    "authentication": {
+      "name": "用户认证模块 (FR-001)",
+      "priority": 1,
+      "features": [
+        {
+          "id": "AUTH-001",
+          "category": "functional",
+          "description": "用户可以通过邮箱和密码注册新账户",
+          "steps": [
+            "导航到注册页面",
+            "输入有效邮箱地址",
+            "输入密码 (至少8位)",
+            "确认密码",
+            "点击注册按钮",
+            "验证收到验证邮件",
+            "点击邮件中的验证链接",
+            "验证自动登录到系统"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "AUTH-002",
+          "category": "functional",
+          "description": "用户可以通过邮箱和密码登录",
+          "steps": [
+            "导航到登录页面",
+            "输入已注册的邮箱",
+            "输入正确密码",
+            "点击登录按钮",
+            "验证成功跳转到首页",
+            "验证显示用户信息",
+            "验证JWT token保存到localStorage"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "AUTH-003",
+          "category": "functional",
+          "description": "用户可以通过GitHub OAuth登录",
+          "steps": [
+            "点击GitHub登录按钮",
+            "重定向到GitHub授权页面",
+            "授权应用访问",
+            "重定向回应用",
+            "验证自动创建账户",
+            "验证跳转到首页",
+            "验证显示GitHub用户信息"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "AUTH-004",
+          "category": "functional",
+          "description": "用户可以通过Google OAuth登录",
+          "steps": [
+            "点击Google登录按钮",
+            "重定向到Google授权页面",
+            "选择Google账户",
+            "授权应用访问",
+            "重定向回应用",
+            "验证自动创建账户",
+            "验证跳转到首页"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "AUTH-005",
+          "category": "functional",
+          "description": "用户可以退出登录",
+          "steps": [
+            "登录系统",
+            "点击用户头像",
+            "点击退出按钮",
+            "验证清除localStorage中的token",
+            "验证跳转到登录页面"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "AUTH-006",
+          "category": "functional",
+          "description": "JWT token过期后自动刷新",
+          "steps": [
+            "登录系统",
+            "等待token过期 (修改过期时间为测试值)",
+            "发起需要认证的API请求",
+            "验证自动刷新token",
+            "验证请求成功"
+          ],
+          "passes": false,
+          "verification_method": "api_test"
+        },
+        {
+          "id": "AUTH-007",
+          "category": "security",
+          "description": "密码使用bcrypt加密存储",
+          "steps": [
+            "注册新用户",
+            "检查数据库中密码字段",
+            "验证密码哈希值不是明文",
+            "验证哈希值包含bcrypt标识符"
+          ],
+          "passes": false,
+          "verification_method": "database_inspection"
+        },
+        {
+          "id": "AUTH-008",
+          "category": "security",
+          "description": "登录失败5次后锁定账户15分钟",
+          "steps": [
+            "使用错误密码登录5次",
+            "验证第6次登录返回账户锁定错误",
+            "等待15分钟",
+            "验证可以重新登录"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        }
+      ]
+    },
+    "dashboard": {
+      "name": "首页仪表盘 (FR-002)",
+      "priority": 2,
+      "features": [
+        {
+          "id": "DASH-001",
+          "category": "functional",
+          "description": "首页显示核心指标卡片 (项目/接口/场景/计划总数)",
+          "steps": [
+            "登录系统",
+            "导航到首页",
+            "验证显示项目总数卡片",
+            "验证显示接口总数卡片",
+            "验证显示场景总数卡片",
+            "验证显示计划总数卡片",
+            "验证数字准确对应数据库"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "DASH-002",
+          "category": "functional",
+          "description": "首页显示测试执行趋势图",
+          "steps": [
+            "登录系统",
+            "导航到首页",
+            "验证显示趋势图组件",
+            "验证图表有X轴 (时间)",
+            "验证图表有Y轴 (执行次数)",
+            "验证图表显示最近30天数据",
+            "验证图表可以交互 (hover显示详情)"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "DASH-003",
+          "category": "functional",
+          "description": "首页显示项目覆盖率概览",
+          "steps": [
+            "登录系统",
+            "导航到首页",
+            "验证显示覆盖率组件",
+            "验证显示已测试项目数",
+            "验证显示未测试项目数",
+            "验证显示百分比"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        }
+      ]
+    },
+    "project_management": {
+      "name": "项目管理模块 (FR-003)",
+      "priority": 3,
+      "features": [
+        {
+          "id": "PROJ-001",
+          "category": "functional",
+          "description": "用户可以创建新项目",
+          "steps": [
+            "登录系统",
+            "导航到项目列表页",
+            "点击创建项目按钮",
+            "输入项目名称",
+            "输入项目描述",
+            "选择项目类型",
+            "点击提交",
+            "验证项目出现在列表中",
+            "验证数据库中有记录"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "PROJ-002",
+          "category": "functional",
+          "description": "用户可以编辑项目信息",
+          "steps": [
+            "导航到项目列表页",
+            "点击某个项目的编辑按钮",
+            "修改项目名称",
+            "修改项目描述",
+            "点击保存",
+            "验证列表中显示新名称",
+            "验证数据库已更新"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "PROJ-003",
+          "category": "functional",
+          "description": "用户可以删除项目",
+          "steps": [
+            "导航到项目列表页",
+            "点击某个项目的删除按钮",
+            "确认删除",
+            "验证项目从列表消失",
+            "验证数据库中记录已删除 (软删除)"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "PROJ-004",
+          "category": "functional",
+          "description": "用户可以为项目配置数据库连接",
+          "steps": [
+            "进入项目详情页",
+            "点击数据库配置标签",
+            "点击添加数据库按钮",
+            "选择数据库类型 (MySQL/PostgreSQL)",
+            "输入主机地址",
+            "输入端口",
+            "输入数据库名",
+            "输入用户名",
+            "输入密码",
+            "点击测试连接",
+            "验证显示连接成功",
+            "点击保存"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "PROJ-005",
+          "category": "functional",
+          "description": "系统自动检测数据库连接状态",
+          "steps": [
+            "创建项目并配置数据库",
+            "等待10分钟 (配置的检测间隔)",
+            "检查数据库连接状态",
+            "验证状态更新为最新检测结果"
+          ],
+          "passes": false,
+          "verification_method": "scheduled_task_verification"
+        },
+        {
+          "id": "PROJ-006",
+          "category": "functional",
+          "description": "用户可以配置多个数据源",
+          "steps": [
+            "进入项目详情页",
+            "添加第一个数据库配置",
+            "添加第二个数据库配置",
+            "验证两个数据库都显示在列表中",
+            "验证可以选择默认数据库"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        }
+      ]
+    },
+    "keyword_management": {
+      "name": "关键字配置模块 (FR-004)",
+      "priority": 4,
+      "features": [
+        {
+          "id": "KEYW-001",
+          "category": "functional",
+          "description": "系统提供内置关键字库",
+          "steps": [
+            "导航到关键字配置页",
+            "验证显示内置关键字列表",
+            "验证包含'发送请求'关键字",
+            "验证包含'断言'关键字",
+            "验证包含'提取变量'关键字",
+            "验证包含'数据库操作'关键字"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "KEYW-002",
+          "category": "functional",
+          "description": "用户可以使用Monaco Editor创建自定义关键字",
+          "steps": [
+            "导航到关键字配置页",
+            "点击创建关键字按钮",
+            "输入关键字名称",
+            "输入关键字描述",
+            "在Monaco Editor中编写Python代码",
+            "定义关键字参数",
+            "点击保存",
+            "验证关键字出现在列表中"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "KEYW-003",
+          "category": "functional",
+          "description": "用户可以启用/禁用关键字",
+          "steps": [
+            "导航到关键字配置页",
+            "找到某个关键字",
+            "点击禁用按钮",
+            "验证关键字状态变为disabled",
+            "验证该关键字不再在场景编排中可选"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "KEYW-004",
+          "category": "functional",
+          "description": "用户可以管理关键字参数",
+          "steps": [
+            "编辑某个自定义关键字",
+            "添加新参数",
+            "设置参数类型",
+            "设置参数默认值",
+            "设置参数是否必填",
+            "保存",
+            "验证参数信息正确显示"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "KEYW-005",
+          "category": "functional",
+          "description": "自定义关键字支持docstring自动解析",
+          "steps": [
+            "创建自定义关键字",
+            "编写Python代码包含docstring",
+            "在docstring中描述参数",
+            "保存",
+            "验证参数列表自动从docstring解析"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        }
+      ]
+    },
+    "interface_management": {
+      "name": "接口定义模块 (FR-005)",
+      "priority": 5,
+      "features": [
+        {
+          "id": "INTF-001",
+          "category": "functional",
+          "description": "用户可以创建接口目录树",
+          "steps": [
+            "进入项目的接口定义页",
+            "点击创建文件夹按钮",
+            "输入文件夹名称",
+            "保存",
+            "验证文件夹出现在树中",
+            "创建子文件夹",
+            "验证树形结构正确显示"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "INTF-002",
+          "category": "functional",
+          "description": "用户可以通过cURL命令导入接口",
+          "steps": [
+            "进入某个目录",
+            "点击导入cURL按钮",
+            "粘贴cURL命令",
+            "点击解析",
+            "验证自动填充接口信息",
+            "验证自动提取请求头",
+            "验证自动提取请求体",
+            "点击保存",
+            "验证接口创建成功"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "INTF-003",
+          "category": "functional",
+          "description": "用户可以手动创建接口定义",
+          "steps": [
+            "进入某个目录",
+            "点击创建接口按钮",
+            "输入接口名称",
+            "选择HTTP方法",
+            "输入URL路径",
+            "配置请求头",
+            "配置请求体",
+            "配置期望响应",
+            "保存",
+            "验证接口创建成功"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "INTF-004",
+          "category": "functional",
+          "description": "用户可以管理多环境配置",
+          "steps": [
+            "进入环境配置页",
+            "点击创建环境",
+            "输入环境名称 (开发/测试/生产)",
+            "输入基础URL",
+            "配置环境变量",
+            "保存",
+            "验证环境出现在列表中",
+            "验证可以切换环境"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "INTF-005",
+          "category": "functional",
+          "description": "用户可以管理全局变量",
+          "steps": [
+            "进入全局变量配置页",
+            "点击添加变量",
+            "输入变量名",
+            "输入变量值",
+            "选择变量类型",
+            "保存",
+            "验证变量出现在列表中"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "INTF-006",
+          "category": "functional",
+          "description": "用户可以上传文件到MinIO",
+          "steps": [
+            "创建接口时需要上传文件",
+            "点击上传按钮",
+            "选择本地文件",
+            "验证显示上传进度",
+            "验证上传成功",
+            "验证文件保存到MinIO",
+            "验证接口关联MinIO文件路径"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        }
+      ]
+    },
+    "scenario_orchestration": {
+      "name": "场景编排模块 (FR-006)",
+      "priority": 6,
+      "features": [
+        {
+          "id": "SCEN-001",
+          "category": "functional",
+          "description": "用户可以创建测试场景",
+          "steps": [
+            "进入场景编排页",
+            "点击创建场景",
+            "输入场景名称",
+            "输入场景描述",
+            "选择所属项目",
+            "保存",
+            "验证场景创建成功"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "SCEN-002",
+          "category": "functional",
+          "description": "用户可以使用拖拽方式编排测试步骤",
+          "steps": [
+            "进入某个场景",
+            "点击添加步骤",
+            "选择关键字类型",
+            "选择具体关键字",
+            "配置关键字参数",
+            "确认添加",
+            "验证步骤出现在列表中",
+            "拖动步骤改变顺序",
+            "验证顺序改变成功"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "SCEN-003",
+          "category": "functional",
+          "description": "关键字选择支持三级联动 (类型→名称→参数)",
+          "steps": [
+            "添加测试步骤",
+            "验证第一个下拉框显示关键字类型",
+            "选择类型后",
+            "验证第二个下拉框显示该类型的所有关键字",
+            "选择关键字后",
+            "验证动态显示该关键字的参数表单"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "SCEN-004",
+          "category": "functional",
+          "description": "用户可以配置前置SQL",
+          "steps": [
+            "进入某个场景",
+            "切换到前置SQL标签",
+            "选择数据源",
+            "编写SQL语句",
+            "保存",
+            "验证前置SQL保存成功"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "SCEN-005",
+          "category": "functional",
+          "description": "用户可以配置后置SQL",
+          "steps": [
+            "进入某个场景",
+            "切换到后置SQL标签",
+            "选择数据源",
+            "编写SQL语句",
+            "保存",
+            "验证后置SQL保存成功"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "SCEN-006",
+          "category": "functional",
+          "description": "用户可以导入CSV文件进行数据驱动测试",
+          "steps": [
+            "进入某个场景",
+            "切换到数据驱动标签",
+            "点击导入CSV",
+            "选择本地CSV文件",
+            "验证显示CSV预览",
+            "验证自动识别列名作为参数",
+            "保存",
+            "验证数据集保存成功"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "SCEN-007",
+          "category": "functional",
+          "description": "用户可以调试场景并生成Allure报告",
+          "steps": [
+            "进入某个场景",
+            "点击调试按钮",
+            "选择测试环境",
+            "验证显示执行进度",
+            "等待执行完成",
+            "验证生成Allure报告",
+            "点击查看报告",
+            "验证Allure报告正确打开"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        }
+      ]
+    },
+    "test_plan": {
+      "name": "测试计划模块 (FR-007)",
+      "priority": 7,
+      "features": [
+        {
+          "id": "PLAN-001",
+          "category": "functional",
+          "description": "用户可以创建测试计划",
+          "steps": [
+            "进入测试计划页",
+            "点击创建计划",
+            "输入计划名称",
+            "输入计划描述",
+            "选择计划执行时间",
+            "保存",
+            "验证计划创建成功"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "PLAN-002",
+          "category": "functional",
+          "description": "用户可以向计划添加测试场景",
+          "steps": [
+            "进入某个计划",
+            "点击添加场景",
+            "选择要测试的场景",
+            "设置场景执行顺序",
+            "保存",
+            "验证场景出现在计划中"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "PLAN-003",
+          "category": "functional",
+          "description": "测试计划按场景顺序执行",
+          "steps": [
+            "创建包含3个场景的计划",
+            "执行计划",
+            "验证场景1先执行",
+            "场景1完成后",
+            "验证场景2开始执行",
+            "场景2完成后",
+            "验证场景3开始执行"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "PLAN-004",
+          "category": "functional",
+          "description": "数据驱动的场景支持并行执行",
+          "steps": [
+            "创建包含数据驱动场景的计划",
+            "场景有10组测试数据",
+            "执行计划",
+            "验证10组数据并发执行",
+            "验证执行时间明显少于顺序执行"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "PLAN-005",
+          "category": "functional",
+          "description": "用户可以实时监控执行进度",
+          "steps": [
+            "执行测试计划",
+            "进入执行监控页",
+            "验证显示总进度条",
+            "验证显示当前执行的场景",
+            "验证显示已完成的场景数",
+            "验证显示失败的场景数"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "PLAN-006",
+          "category": "functional",
+          "description": "用户可以暂停/恢复/终止执行",
+          "steps": [
+            "开始执行测试计划",
+            "等待执行几个场景",
+            "点击暂停按钮",
+            "验证执行暂停",
+            "点击恢复按钮",
+            "验证执行继续",
+            "点击终止按钮",
+            "验证执行停止"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        }
+      ]
+    },
+    "test_report": {
+      "name": "测试报告模块 (FR-008)",
+      "priority": 8,
+      "features": [
+        {
+          "id": "REPT-001",
+          "category": "functional",
+          "description": "系统自动生成测试报告",
+          "steps": [
+            "执行测试计划",
+            "等待执行完成",
+            "进入报告列表页",
+            "验证生成了新的报告记录",
+            "验证报告名称包含时间戳",
+            "验证报告显示执行结果统计"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "REPT-002",
+          "category": "functional",
+          "description": "用户可以查看平台自定义报告",
+          "steps": [
+            "进入报告列表",
+            "点击某个报告",
+            "验证显示报告概览",
+            "验证显示执行统计 (通过/失败/跳过)",
+            "验证显示场景执行明细",
+            "验证显示步骤执行明细"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "REPT-003",
+          "category": "functional",
+          "description": "用户可以查看Allure报告",
+          "steps": [
+            "进入某个执行报告",
+            "点击查看Allure报告",
+            "验证Allure报告在新标签页打开",
+            "验证显示测试套件",
+            "验证显示测试用例",
+            "验证可以查看详细日志"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "REPT-004",
+          "category": "functional",
+          "description": "用户可以导出报告",
+          "steps": [
+            "进入某个报告",
+            "点击导出按钮",
+            "选择导出格式 (PDF/Excel/HTML)",
+            "验证文件下载成功",
+            "验证文件内容完整"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "REPT-005",
+          "category": "functional",
+          "description": "系统自动清理30天前的报告",
+          "steps": [
+            "创建31天前的测试报告记录",
+            "运行清理任务",
+            "验证31天前的报告被删除",
+            "验证30天内的报告保留"
+          ],
+          "passes": false,
+          "verification_method": "scheduled_task_verification"
+        }
+      ]
+    },
+    "global_params": {
+      "name": "全局参数模块 (FR-010)",
+      "priority": 9,
+      "features": [
+        {
+          "id": "GPAR-001",
+          "category": "functional",
+          "description": "系统提供内置工具函数库",
+          "steps": [
+            "进入全局参数配置页",
+            "验证显示StringUtils函数",
+            "验证显示TimeUtils函数",
+            "验证显示RandomUtils函数",
+            "验证每个函数有docstring说明"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "GPAR-002",
+          "category": "functional",
+          "description": "用户可以使用Monaco Editor创建工具函数",
+          "steps": [
+            "进入全局参数配置页",
+            "点击创建函数",
+            "在Monaco Editor中编写Python代码",
+            "包含docstring描述",
+            "定义函数参数",
+            "保存",
+            "验证函数出现在列表中"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "GPAR-003",
+          "category": "functional",
+          "description": "场景中可以通过{{函数名()}}引用全局参数",
+          "steps": [
+            "创建测试步骤",
+            "在参数值中输入{{current_time()}}",
+            "保存并执行场景",
+            "验证函数调用成功",
+            "验证返回值正确替换"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        },
+        {
+          "id": "GPAR-004",
+          "category": "functional",
+          "description": "支持函数嵌套调用",
+          "steps": [
+            "创建测试步骤",
+            "在参数值中输入{{timestamp_to_date(current_timestamp())}}",
+            "保存并执行场景",
+            "验证嵌套函数调用成功",
+            "验证返回值正确"
+          ],
+          "passes": false,
+          "verification_method": "e2e_browser_test"
+        }
+      ]
+    }
+  },
+  "metadata": {
+    "total_features": 54,
+    "completed_features": 0,
+    "completion_rate": 0.0,
+    "notes": "基于 FR-001 到 FR-010 需求文档的功能清单"
+  }
+}
