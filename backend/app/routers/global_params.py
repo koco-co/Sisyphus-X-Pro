@@ -149,8 +149,8 @@ async def create_global_param(
             method_name=param.method_name,
             description=param.description,
             code=param.code,
-            params_in=param.params_in or [],
-            params_out=param.params_out or [],
+            params_in=param.params_in if isinstance(param.params_in, list) else [],
+            params_out=param.params_out if isinstance(param.params_out, list) else [],
             is_builtin=param.is_builtin,
             created_at=param.created_at,
         )
@@ -235,8 +235,8 @@ async def update_global_param(
             method_name=param.method_name,
             description=param.description,
             code=param.code,
-            params_in=param.params_in or [],
-            params_out=param.params_out or [],
+            params_in=param.params_in if isinstance(param.params_in, list) else [],
+            params_out=param.params_out if isinstance(param.params_out, list) else [],
             is_builtin=param.is_builtin,
             created_at=param.created_at,
         )
