@@ -55,6 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setRefreshToken(newRefreshToken || null)
     setUser(newUser)
     apiClient.setToken(newToken)
+    setLoading(false)
 
     localStorage.setItem('token', newToken)
     if (newRefreshToken) {
@@ -72,6 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setRefreshToken(newRefreshToken || null)
     setUser(newUser)
     apiClient.setToken(newToken)
+    setLoading(false)
 
     localStorage.setItem('token', newToken)
     if (newRefreshToken) {
