@@ -1,12 +1,24 @@
 
+增加角色使用的skill
+产品: product-manager-toolkit (通过这个skill, 生成可供内部的开发和测试人员理解的需求文档就可以)
+架构师: architecture-patterns、task-plan
+前端: frontend-design
+后端: fastapi-backend-template
+黑盒测试: webapp-testing
+白盒测试: pytest
+代码审查: requesting-code-review、react-vite-best-practices
+代码提交: git-commit
+
+任务规划.json中新增字段reason, 一开始为空, 后续如果测试阶段, 审查阶段如果未通过, 将status激活时, 需要填写reason.
+
+
+
 
 # Sisyphus-X-Pro 自动化测试管理平台
 
 
 
 ## 技术架构
-
-> 通过find-skills查找
 
 ### 产品
 
@@ -18,7 +30,7 @@ skill:
 
 ### 后端 
 
-技术栈: uv + python 3.12 + ruff + pyright + fastapi + SQLModel + sisyphus-api-engine
+技术栈: uv + python 3.12 + ruff + pyright + fastapi + SQLAlchemy + sisyphus-api-engine
 
 ### 中间件 
 
