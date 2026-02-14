@@ -209,6 +209,7 @@ stateDiagram-v2
 | `description` | 任务描述 | `"实现用户登录接口"` |
 | `steps` | 步骤清单 | `["步骤1", "步骤2"]` |
 | `dependencies` | 前置依赖 | `["TASK-001"]` |
+| `reason` | 激活原因（初始为空，测试/审查未通过时填写） | `"登录接口返回 500"` |
 
 ### JSON 示例（单任务）
 
@@ -233,7 +234,8 @@ stateDiagram-v2
       "dependencies": [],
       "status": "未开始",
       "creator": "@architect",
-      "assigned": "@backend-dev"
+      "assigned": "@backend-dev",
+      "reason": ""
     }
   ]
 }
@@ -246,7 +248,8 @@ stateDiagram-v2
 | 成员 | 读取条件 | 更新操作 |
 |------|----------|----------|
 | `@frontend-dev` / `@backend-dev` | `assigned` 为自己 + `status: "未开始"` 或 `"已激活"` | 领取 → `"进行中"` → `"已完成"` / 修复 → `"已解决"` |
-| `@blackbox-qa` / `@whitebox-qa` | `status: "已完成"` 的测试任务 | 通过 → `"已关闭"` / 有 Bug → `"已激活"` + 改 `assigned` |
+| `@blackbox-qa` / `@whitebox-qa` | `status: "已完成"` 的测试任务 | 通过 → `"已关闭"` / 有 Bug → `"已激活"` + 改 `assigned` + **填写 `reason`** |
+| `@pr-reviewer` | 审查中的任务 | 有问题 → `"已激活"` + 改 `assigned` + **填写 `reason`** |
 | 其他成员 | 各自的非代码任务 | 自行更新 `status` |
 
 ---
@@ -273,12 +276,16 @@ stateDiagram-v2
 
 ### Skills
 
-| 成员 | Skill | 必须/可选 | 说明 |
-|------|-------|-----------|------|
-| `@architect` | `task-plan` | **必须** | 创建 `docs/任务规划.json`，路径：`.claude/skills/task-plan/SKILL.md` |
-| `@blackbox-qa` | `playwright-expert` | 可选 | Web 自动化测试 |
-| `@whitebox-qa` | `python-pytest-patterns` | 可选 | pytest 单元测试 |
-| `@committer` | `git-commit` | 可选 | Conventional Commits 提交 |
+| 成员 | Skill | 说明 |
+|------|-------|------|
+| `@pm` | `product-manager-toolkit` | 生成可供开发和测试人员理解的需求文档 |
+| `@architect` | `architecture-patterns`、`task-plan`（**必须**） | 架构设计 + 创建 `docs/任务规划.json` |
+| `@frontend-dev` | `frontend-design` | 前端 UI 设计与实现 |
+| `@backend-dev` | `fastapi-backend-template` | FastAPI 后端开发 |
+| `@blackbox-qa` | `webapp-testing` | Web 功能测试与自动化 |
+| `@whitebox-qa` | `pytest` | 单元测试与接口自动化 |
+| `@pr-reviewer` | `requesting-code-review`、`react-vite-best-practices` | 代码审查 |
+| `@committer` | `git-commit` | Conventional Commits 提交 |
 
 ### 工具脚本
 

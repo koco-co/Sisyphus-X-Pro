@@ -1,7 +1,6 @@
 ---
 name: task-plan
 description: '生成任务规划.json 状态机文件。仅由架构师(@architect)在完成接口定义文档和数据库设计文档后调用。将需求拆分为最小粒度任务，预指派成员，生成符合禅道状态流转模型的 JSON 文件。'
-allowed-tools: Bash, Read, Write
 ---
 
 # 任务规划 JSON 生成器（Task Plan Generator）
@@ -98,7 +97,8 @@ allowed-tools: Bash, Read, Write
       "dependencies": ["TASK-000"],
       "status": "未开始",
       "creator": "@architect",
-      "assigned": "@backend-dev | @frontend-dev | @blackbox-qa | @whitebox-qa"
+      "assigned": "@backend-dev | @frontend-dev | @blackbox-qa | @whitebox-qa",
+      "reason": ""
     }
   ]
 }
@@ -178,7 +178,8 @@ cat docs/数据库设计.md
       "dependencies": [],
       "status": "未开始",
       "creator": "@architect",
-      "assigned": "@backend-dev"
+      "assigned": "@backend-dev",
+      "reason": ""
     },
     {
       "id": "TASK-002",
@@ -195,7 +196,8 @@ cat docs/数据库设计.md
       "dependencies": ["TASK-001"],
       "status": "未开始",
       "creator": "@architect",
-      "assigned": "@backend-dev"
+      "assigned": "@backend-dev",
+      "reason": ""
     },
     {
       "id": "TASK-003",
@@ -212,7 +214,8 @@ cat docs/数据库设计.md
       "dependencies": [],
       "status": "未开始",
       "creator": "@architect",
-      "assigned": "@frontend-dev"
+      "assigned": "@frontend-dev",
+      "reason": ""
     },
     {
       "id": "TASK-004",
@@ -229,7 +232,8 @@ cat docs/数据库设计.md
       "dependencies": ["TASK-002", "TASK-003"],
       "status": "未开始",
       "creator": "@architect",
-      "assigned": "@blackbox-qa"
+      "assigned": "@blackbox-qa",
+      "reason": ""
     },
     {
       "id": "TASK-005",
@@ -245,7 +249,8 @@ cat docs/数据库设计.md
       "dependencies": ["TASK-002"],
       "status": "未开始",
       "creator": "@architect",
-      "assigned": "@whitebox-qa"
+      "assigned": "@whitebox-qa",
+      "reason": ""
     }
   ]
 }
@@ -258,3 +263,4 @@ cat docs/数据库设计.md
 3. **ID 连续性**：任务 ID 必须从 `TASK-001` 开始连续递增
 4. **初始状态**：所有任务的初始 `status` 必须为 `"未开始"`
 5. **creator 统一**：所有任务的 `creator` 均为 `"@architect"`
+6. **reason 字段**：初始为空字符串 `""`，仅在测试或审查阶段将 `status` 改为 `"已激活"` 时必须填写具体原因
