@@ -8,6 +8,36 @@ description: Agent Teams — 9人多智能体协作模式（状态机驱动）
 
 ---
 
+## 📂 工作目录规范
+
+```
+项目根目录/
+├── frontend/          # 前端代码工作区 → @frontend-dev 专属
+├── backend/           # 后端代码工作区 → @backend-dev 专属
+├── test_black/        # 黑盒测试工作区 → @blackbox-qa 专属
+├── test_white/        # 白盒测试工作区 → @whitebox-qa 专属
+├── docs/              # 文档目录（共享读写）
+├── init.sh            # 一键启动脚本（@architect 创建）
+├── README.md          # 项目说明（@pm 维护）
+├── CHANGELOG.md       # 变更日志（@pm 维护）
+├── CLAUDE.md          # 开发规范（@architect 维护）
+└── 配置文件            # 根目录共享配置（所有成员可读）
+```
+
+### 隔离规则
+
+| 规则 | 说明 |
+|------|------|
+| **可查看** | 所有成员可查看项目内任意目录的文件 |
+| **可执行** | 所有成员可执行项目内任意脚本和命令（如 `init.sh`、测试命令等） |
+| **可编辑** | 每个成员**只能在自己的工作目录内**创建、修改、删除文件 |
+| **共享配置** | 根目录下的配置文件（如 `.env`、`package.json` 等）由 `@architect` 统一管理 |
+| **环境搭建** | `@architect` 在 Step 2 负责初始化所有工作目录的基础环境和脚手架 |
+
+> ⚠️ **仅禁止越界编辑**：开发和测试成员可以查看和执行任意目录的文件，但**不可在自己工作目录之外创建、修改或删除文件**。
+
+---
+
 ## 📋 团队成员定义（9人）
 
 ### 0. Team Lead（任务调度者） — 你自己
@@ -33,11 +63,14 @@ description: Agent Teams — 9人多智能体协作模式（状态机驱动）
 
 ### 2. Architect（架构师） `@architect`
 
-**职责**：技术选型与系统设计
+**职责**：技术选型、系统设计、环境搭建
 
 - 根据需求文档进行技术选型
+- **搭建各工作目录的初始环境**：初始化 `frontend/`、`backend/`、`test_black/`、`test_white/` 的项目脚手架与配置
+- **创建 `init.sh`**（一键启动项目环境脚本）
 - 产出 `docs/接口定义.md`、`docs/数据库设计.md`
-- **调用 `task_plan` skill** 创建 `docs/任务规划.json`（任务必须拆分至最小粒度，每个任务预指派 `assigned` 成员）
+- **调用 `task_plan` skill** 创建 `docs/任务规划.json`（任务必须拆分至最小粒度，每个任务预指派 `assigned` 成员，并明确工作目录）
+- 管理根目录共享配置文件
 - 创建或更新 `CLAUDE.md`
 
 ---
@@ -45,32 +78,38 @@ description: Agent Teams — 9人多智能体协作模式（状态机驱动）
 ### 3. Frontend Dev（前端开发） `@frontend-dev`
 
 **职责**：按接口文档和数据库文档开发前端代码
+**工作目录**：`frontend/`（仅在此目录下操作）
 
 - 从 `docs/任务规划.json` 中领取 `assigned: "@frontend-dev"` 且 `status: "未开始"` 的任务
 - 开发完成后将任务 `status` 更新为 `"已完成"`
 - 若任务被测试激活（`status: "已激活"`），修复后将 `status` 更新为 `"已解决"`
+- 可查看和执行项目内任意文件，但**不可编辑非 `frontend/` 目录的文件**
 
 ---
 
 ### 4. Backend Dev（后端开发） `@backend-dev`
 
 **职责**：按接口文档和数据库文档开发后端代码
+**工作目录**：`backend/`（仅在此目录下操作）
 
 - 从 `docs/任务规划.json` 中领取 `assigned: "@backend-dev"` 且 `status: "未开始"` 的任务
 - 开发完成后将任务 `status` 更新为 `"已完成"`
 - 若任务被测试激活（`status: "已激活"`），修复后将 `status` 更新为 `"已解决"`
+- 可查看和执行项目内任意文件，但**不可编辑非 `backend/` 目录的文件**
 
 ---
 
 ### 5. Blackbox QA（黑盒测试） `@blackbox-qa`
 
 **职责**：功能测试与环境初始化
+**工作目录**：`test_black/`（测试代码仅在此目录下编写）
 
 - 编写测试用例文档
 - 执行 Web 自动化测试（Playwright / 浏览器 MCP 工具）
-- 在项目根目录创建 `init.sh`（一键启动项目环境）
+- 使用 `init.sh` 启动项目环境（由 `@architect` 创建，`@blackbox-qa` 仅有使用权限）
 - 发现 Bug → 将任务 `status` 改为 `"已激活"`，`assigned` 改为对应开发成员
 - 开发修复后（`status: "已解决"`）→ 验证通过 → 将 `status` 改为 `"已关闭"`
+- 可查看和执行项目内任意文件，但**不可编辑非 `test_black/` 目录的文件**
 - 出错了找开发，不自行修复代码
 
 ---
@@ -78,11 +117,13 @@ description: Agent Teams — 9人多智能体协作模式（状态机驱动）
 ### 6. Whitebox QA（白盒测试） `@whitebox-qa`
 
 **职责**：单元测试与接口自动化
+**工作目录**：`test_white/`（测试代码仅在此目录下编写）
 
 - 编写并执行单元测试（pytest）
 - 接口自动化测试
 - 发现 Bug → 将任务 `status` 改为 `"已激活"`，`assigned` 改为对应开发成员
 - 开发修复后（`status: "已解决"`）→ 验证通过 → 将 `status` 改为 `"已关闭"`
+- 可查看和执行项目内任意文件，但**不可编辑非 `test_white/` 目录的文件**
 
 ---
 
