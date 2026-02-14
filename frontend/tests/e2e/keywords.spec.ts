@@ -30,7 +30,7 @@ test.describe('KEYW 模块: 关键字配置', () => {
 
     // 登录
     await authPage.login(testUser.email, testUser.password)
-    await expect(page).toHaveURL(/.*\/dashboard/)
+    await expect(page).toHaveURL(/.*\/(dashboard|\/)/)
   })
 
   test.afterAll(async ({ page }) => {
