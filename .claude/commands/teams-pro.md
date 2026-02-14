@@ -86,7 +86,7 @@ description: Agent Teams — 9人多智能体协作模式（状态机驱动）
 | 白盒测试 | `@whitebox-qa` | `test_white/` | 单元测试（pytest）+ 接口自动化 |
 
 **共同规则**：
-- 发现 Bug → `status` 改为 `"已激活"`，`assigned` 改为对应开发成员
+- 发现 Bug → `status` 改为 `"已激活"`，`assigned` 改为对应开发成员，**填写 `reason`**
 - 开发修复后（`status: "已解决"`）→ 验证通过 → `status` 改为 `"已关闭"`
 - 可查看和执行项目内任意文件，但**不可编辑自身工作目录外的文件**
 - 出错找开发，不自行修复代码
@@ -272,7 +272,7 @@ stateDiagram-v2
 
 ---
 
-## ️ Skill 与工具
+## 🛠️ Skill 与工具
 
 ### Skills
 

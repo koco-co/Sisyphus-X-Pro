@@ -59,7 +59,8 @@ echo ""
 
 jq -r '
   [.tasks[] | select(.status != "已关闭")] | .[0:5] | .[] |
-  "  \(.id) | \(.status) | \(.assigned)\n  └─ \(.description)\n"
+  "  \(.id) | \(.status) | \(.assigned)\n  └─ \(.description)" +
+  (if (.reason // "") != "" then "\n  └─ 原因: \(.reason)" else "" end) + "\n"
 ' "$TASK_FILE"
 
 # 按 assigned 分组统计未关闭任务
